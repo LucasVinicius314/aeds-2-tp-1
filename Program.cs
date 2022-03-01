@@ -10,6 +10,8 @@ namespace Aeds3TP1
     {
       var conta = new Conta
       {
+        Lapide = '\0',
+        TotalBytes = 0,
         IdConta = 0,
         NomePessoa = "joao",
         Cpf = "123456789",
@@ -17,12 +19,25 @@ namespace Aeds3TP1
         TransferenciasRealizadas = 10,
         SaldoConta = 1000,
       };
+      var conta2 = new Conta
+      {
+        Lapide = '\0',
+        TotalBytes = 0,
+        IdConta = 0,
+        NomePessoa = "lucas",
+        Cpf = "10987654321",
+        Cidade = "belo horizonte",
+        TransferenciasRealizadas = 0,
+        SaldoConta = 1000,
+      };
+      //Criar conta(Write): dados a serem digitados(nomePessoa, cpf, estado)
+      Write(0,conta,SeekOrigin.End);
+      Write(0,conta2,SeekOrigin.End);
 
-      Write(conta);
+      System.Console.WriteLine(ReadId(2));
+      // var newConta = Read();
 
-      var newConta = Read();
-
-      newConta.ToString();
+      // newConta.ToString();
     }
 
     static byte[] ReverseBytes(byte[] a)
@@ -32,15 +47,17 @@ namespace Aeds3TP1
       return a;
     }
 
-    static Conta Read()
+    static Conta Read(long ler,SeekOrigin seekOrigin)
     {
       #region Arquivo
 
-      var ultimoIdBytes = new byte[4];
+      // var ultimoIdBytes = new byte[4];
 
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      stream.Read(ultimoIdBytes, 0, ultimoIdBytes.Length);
+      // stream.Read(ultimoIdBytes, 0, ultimoIdBytes.Length);
+
+      stream.Seek(ler,seekOrigin);
 
       var lapide = (char)stream.ReadByte();
 
@@ -130,6 +147,8 @@ namespace Aeds3TP1
 
       return new Conta
       {
+        Lapide = lapide,
+        TotalBytes = totalBytes,
         Cidade = cidade,
         Cpf = cpf,
         IdConta = idConta,
@@ -139,20 +158,49 @@ namespace Aeds3TP1
       };
     }
 
-    static uint ReadId()
+    // static uint ReadId()
+    // {
+    //   var ultimoIdBytes = new byte[4];
+
+    //   var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+    //   stream.Read(ultimoIdBytes, 0, ultimoIdBytes.Length);
+
+    //   var lapide = (char)stream.ReadByte();
+
+    //   stream.Close();
+
+    //   return BitConverter.ToUInt32(ultimoIdBytes);
+    // }
+
+    static Conta ReadId(uint id)// consulta do usuario a um id especifico
     {
-      var ultimoIdBytes = new byte[4];
+      
+      var position = (uint)4; //colocar na posicao da primeira lapide 
+      var conta = Read(position,SeekOrigin.Begin);
 
-      var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+      while(conta.IdConta != 0){ //ver se a posicao existe
 
-      stream.Read(ultimoIdBytes, 0, ultimoIdBytes.Length);
+        if(conta.Lapide == '\0'){ //verifica a lapide
+          
+          if(conta.IdConta == id){
 
-      var lapide = (char)stream.ReadByte();
+            return conta;
 
-      stream.Close();
+          }
+          
+        }
 
-      return BitConverter.ToUInt32(ultimoIdBytes);
+        position += conta.TotalBytes; //usa o pular pra ir pra posicao prox posicao
+
+        conta = Read((long)position,SeekOrigin.Begin);
+
+      }
+
+
+      return conta;
     }
+
 
     static uint UpdateCabeca()
     {
@@ -175,11 +223,16 @@ namespace Aeds3TP1
       return newId;
     }
 
-    static void Write(Conta conta)
+    static void Write(long pular,Conta conta, SeekOrigin seekOrigin)
     {
-      var id = UpdateCabeca();
 
+      var id = UpdateCabeca();
+      
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+      
+      stream.Seek(pular,seekOrigin);
+      
 
       var idConta = ReverseBytes(BitConverter.GetBytes(id));
 
@@ -196,11 +249,11 @@ namespace Aeds3TP1
 
       var saldoConta = ReverseBytes(BitConverter.GetBytes(conta.SaldoConta));
 
-      var totalbytes = idConta.Length + nomePessoa.Length + cpf.Length + cidade.Length + transferenciasRealizadas.Length + saldoConta.Length;
+      var totalbytes = idConta.Length + nomePessoa.Length + 1 + cpf.Length + 1 + cidade.Length + 1 + transferenciasRealizadas.Length + saldoConta.Length + 5;
 
       var totalBytesBytes = ReverseBytes(BitConverter.GetBytes(totalbytes));
 
-      stream.Write(idConta); // escreve os primeiros 4 bytes do arquivo, correspondentes ao último id
+      // stream.Write(idConta); // escreve os primeiros 4 bytes do arquivo, correspondentes ao último id
 
       stream.WriteByte((byte)'\0'); // escreve o 5º byte do arquivo, correspondente à lápide
 
@@ -222,6 +275,8 @@ namespace Aeds3TP1
       stream.Write(saldoConta); // escreve os próximos 4 bytes do arquivo, correspondentes ao saldo da conta
 
       stream.Close();
+
+      
     }
 
     static void Update()
