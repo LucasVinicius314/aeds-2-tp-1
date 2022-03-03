@@ -6,61 +6,68 @@ namespace Aeds3TP1
   {
     static string filePath = "data.dat";
 
-    static void MainUpdate(){
-      uint x = 0,resposta = 0,id = 1;
+    static void MainUpdate()
+    {
+      uint x = 0, resposta = 0, id = 1;
       var alterar = "";
       float saldo;
+
       Console.WriteLine("Digite o id da conta a ser alterada:");
-      id = 1;//n sei como pega a resposta
 
-      Conta conta = ReadId(id).Item2;
+      id = 1; // n sei como pega a resposta
 
-      while(x == 0){
+      var conta = ReadId(id).Item2;
+
+      while (x == 0)
+      {
         Console.WriteLine("Digite qual atributo voce deseja alterar:");
-        Console.WriteLine("1 - Nome, 2 - CPF, 3 - Cidade,4 - Saldo, 5 - Sair");
-        if(resposta < 5){
+        Console.WriteLine("1 - Nome, 2 - CPF, 3 - Cidade, 4 - Saldo, 5 - Sair");
+
+        if (resposta < 5)
+        {
           resposta++;
         }
-        
+
         switch (resposta)
         {
           case 1:
             Console.WriteLine("Digite o novo Nome:");
             alterar = "Vitor";
             conta.NomePessoa = alterar;
-          break;
+            break;
 
           case 2:
             Console.WriteLine("Digite o novo CPF:");
             alterar = "12345678999";
             conta.Cpf = alterar;
-          break;
+            break;
 
           case 3:
             Console.WriteLine("Digite a nova Cidade:");
             alterar = "Natalll";
             conta.Cidade = alterar;
-          break;
+            break;
 
           case 4:
             Console.WriteLine("Digite o novo saldo:");
             saldo = (float)2000.00;
             conta.SaldoConta = saldo;
-          break;
+            break;
 
           case 5:
-            Update(id,conta);
+            Update(id, conta);
             x = 1;
-          break;
+            break;
 
           default:
             Console.WriteLine("Digite um numero valido");
-          break;
+            break;
         }
       }
     }
 
-    static void MainCreate(){
+    static void MainCreate()
+    {
       var resposta = "";
 
       var conta = new Conta
@@ -75,18 +82,15 @@ namespace Aeds3TP1
         SaldoConta = 1000,
       };
 
-      //nomePessoa, cpf, estado
+      // nomePessoa, cpf, estado
       Console.WriteLine("Digite o Nome:");
       resposta = "Vitor";
       conta.NomePessoa = resposta;
 
-          
       Console.WriteLine("Digite o CPF:");
       resposta = "12345678999";
       conta.Cpf = resposta;
-        
 
-        
       Console.WriteLine("Digite a Cidade:");
       resposta = "Natalll";
       conta.Cidade = resposta;
@@ -107,6 +111,7 @@ namespace Aeds3TP1
         TransferenciasRealizadas = 10,
         SaldoConta = 1000,
       };
+
       var conta2 = new Conta
       {
         Lapide = '\0',
@@ -118,16 +123,16 @@ namespace Aeds3TP1
         TransferenciasRealizadas = 0,
         SaldoConta = 1000,
       };
-      //Criar conta(Write): dados a serem digitados(nomePessoa, cpf, estado)
+
+      // Criar conta(Write): dados a serem digitados(nomePessoa, cpf, estado)
       WriteUsuario(conta);
       WriteUsuario(conta2);
 
       Console.WriteLine(ReadId(2).Item2);
       Console.WriteLine(ReadId(3).Item2);
-      
+
       MainCreate();
       MainUpdate();
-
     }
 
     static byte[] ReverseBytes(byte[] a)
@@ -137,7 +142,7 @@ namespace Aeds3TP1
       return a;
     }
 
-    static Conta Read(long ler,SeekOrigin seekOrigin)
+    static Conta Read(long ler, SeekOrigin seekOrigin)
     {
       #region Arquivo
 
@@ -147,7 +152,7 @@ namespace Aeds3TP1
 
       // stream.Read(ultimoIdBytes, 0, ultimoIdBytes.Length);
 
-      stream.Seek(ler,seekOrigin);
+      stream.Seek(ler, seekOrigin);
 
       var lapide = (char)stream.ReadByte();
 
@@ -262,60 +267,57 @@ namespace Aeds3TP1
 
     //   return BitConverter.ToUInt32(ultimoIdBytes);
     // }
-    
-    static Tuple<uint, Conta> ReadId(uint id)// consulta do usuario a um id especifico
+
+    static Tuple<uint, Conta> ReadId(uint id) // consulta do usuario a um id especifico
     {
-      var position = (uint)4; //colocar na posicao da primeira lapide 
-      var conta = Read(position,SeekOrigin.Begin);
+      var position = (uint)4; // colocar na posicao da primeira lapide 
+      var conta = Read(position, SeekOrigin.Begin);
 
-      while(conta.IdConta != 0){ //ver se a posicao existe
-
-        if(conta.Lapide == '\0'){ //verifica a lapide
-          
-          if(conta.IdConta == id){
-
-            return new Tuple<uint, Conta>(position,conta);
-
+      while (conta.IdConta != 0) // ver se a posicao existe
+      {
+        if (conta.Lapide == '\0') //verifica a lapide
+        {
+          if (conta.IdConta == id)
+          {
+            return new Tuple<uint, Conta>(position, conta);
           }
-          
         }
 
-        position += conta.TotalBytes; //usa o pular pra ir pra posicao prox posicao
+        position += conta.TotalBytes; // usa o pular pra ir pra posicao prox posicao
 
-        conta = Read((long)position,SeekOrigin.Begin);
-
+        conta = Read((long)position, SeekOrigin.Begin);
       }
 
-      return new Tuple<uint, Conta>(position,conta);
-    }
-    static void WriteUsuario(Conta conta)
-    {
-      Write(UpdateCabeca(),0,conta,SeekOrigin.End);
+      return new Tuple<uint, Conta>(position, conta);
     }
 
-    static void WritePrograma(uint id,Conta conta,uint posicao,SeekOrigin seekOrigin)
+    static void WriteUsuario(Conta conta)
     {
-      Write(id,posicao,conta,seekOrigin);
+      Write(UpdateCabeca(), 0, conta, SeekOrigin.End);
     }
+
+    static void WritePrograma(uint id, Conta conta, uint posicao, SeekOrigin seekOrigin)
+    {
+      Write(id, posicao, conta, seekOrigin);
+    }
+
     static uint SomaBytes(Conta conta)
     {
       var totalbytes = BitConverter.GetBytes(conta.IdConta).Length +
-        Encoding.Unicode.GetBytes(conta.NomePessoa).Length  +
-        Encoding.Unicode.GetBytes(conta.Cpf).Length  +
+        Encoding.Unicode.GetBytes(conta.NomePessoa).Length +
+        Encoding.Unicode.GetBytes(conta.Cpf).Length +
         Encoding.Unicode.GetBytes(conta.Cidade).Length +
         BitConverter.GetBytes(conta.TransferenciasRealizadas).Length +
         BitConverter.GetBytes(conta.SaldoConta).Length + 8;
 
-        return BitConverter.ToUInt32(BitConverter.GetBytes(totalbytes));
+      return BitConverter.ToUInt32(BitConverter.GetBytes(totalbytes));
     }
-    static void Write(uint id,long posicao,Conta conta, SeekOrigin seekOrigin)
+
+    static void Write(uint id, long posicao, Conta conta, SeekOrigin seekOrigin)
     {
-      
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      
-      stream.Seek(posicao,seekOrigin);
-      
+      stream.Seek(posicao, seekOrigin);
 
       var idConta = ReverseBytes(BitConverter.GetBytes(id));
 
@@ -333,7 +335,7 @@ namespace Aeds3TP1
       var saldoConta = ReverseBytes(BitConverter.GetBytes(conta.SaldoConta));
 
       var totalbytes = idConta.Length + nomePessoa.Length + 1 + cpf.Length + 1 + cidade.Length + 1 + transferenciasRealizadas.Length + saldoConta.Length + 5;
-    
+
       var totalBytesBytes = ReverseBytes(BitConverter.GetBytes(totalbytes));
 
       // stream.Write(idConta); // escreve os primeiros 4 bytes do arquivo, correspondentes ao último id
@@ -381,35 +383,37 @@ namespace Aeds3TP1
       return newId;
     }
 
-    static void Lapide(uint posicao){
+    static void Lapide(uint posicao)
+    {
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      stream.Seek(posicao,SeekOrigin.Begin);
+      stream.Seek(posicao, SeekOrigin.Begin);
 
       stream.WriteByte((byte)'*');
 
       stream.Close();
-
     }
-    
-    static void Update(uint id,Conta contaUsuario)
+
+    static void Update(uint id, Conta contaUsuario)
     {
       var obj = ReadId(id);
       var posicao = obj.Item1;
       var conta = obj.Item2;
       contaUsuario.TotalBytes = SomaBytes(contaUsuario);
 
-      if(conta.TotalBytes < contaUsuario.TotalBytes){
-        //colocar como morto o atual
+      if (conta.TotalBytes < contaUsuario.TotalBytes)
+      {
+        // colocar como morto o atual
         Lapide(posicao);
-        WritePrograma(id,contaUsuario,0,SeekOrigin.End);
-      }else if(conta.TotalBytes > contaUsuario.TotalBytes){
+        WritePrograma(id, contaUsuario, 0, SeekOrigin.End);
+      }
+      else if (conta.TotalBytes > contaUsuario.TotalBytes)
+      {
         contaUsuario.TotalBytes = conta.TotalBytes;
-        WritePrograma(id,contaUsuario,posicao,SeekOrigin.Begin);
-
-      }else
-        WritePrograma(id,contaUsuario,posicao,SeekOrigin.Begin);
-
+        WritePrograma(id, contaUsuario, posicao, SeekOrigin.Begin);
+      }
+      else
+        WritePrograma(id, contaUsuario, posicao, SeekOrigin.Begin);
     }
   }
 }
