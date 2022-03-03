@@ -90,6 +90,8 @@ namespace Aeds3TP1
       Console.WriteLine("Digite a Cidade:");
       resposta = "Natalll";
       conta.Cidade = resposta;
+
+      WriteUsuario(conta);
     }
 
     static void Main(string[] args)
