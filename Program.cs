@@ -6,186 +6,104 @@ namespace Aeds3TP1
   {
     static string filePath = "data.dat";
 
-    static void MainUpdate()
-    {
-      Console.WriteLine("Digite o ID da conta a ser alterada:");
-
-#if DEBUG
-      var idInput = "1";
-#else
-      var idInput = Console.ReadLine();
-#endif
-
-      if (idInput == null)
-      {
-        Console.WriteLine("Id inválido.");
-
-        return;
-      }
-
-      var id = uint.Parse(idInput);
-
-      var res = ReadId(id);
-
-      var posicao = res.Item1;
-      var conta = res.Item2;
-
-      while (true)
-      {
-        Console.WriteLine("Digite qual atributo você deseja alterar:");
-        Console.WriteLine("1 - Nome, 2 - CPF, 3 - Cidade, 4 - Saldo, 5 - Sair");
-
-#if DEBUG
-        var respostaInput = "1";
-#else
-      var respostaInput = Console.ReadLine();
-#endif
-
-        if (respostaInput == null)
-        {
-          Console.WriteLine("Valor inválido.");
-
-          return;
-        }
-
-        var resposta = short.Parse(respostaInput);
-
-        switch (resposta)
-        {
-          case 1:
-            Console.WriteLine("Digite o novo nome:");
-
-#if DEBUG
-            var nome = "caio";
-#else
-            var nome = Console.ReadLine();
-#endif
-
-            if (nome != null)
-            {
-              conta.NomePessoa = nome;
-            }
-
-#if DEBUG
-            return;
-#else
-            break;
-#endif
-
-          case 2:
-            Console.WriteLine("Digite o novo CPF:");
-
-            var cpf = Console.ReadLine();
-
-            if (cpf != null)
-            {
-              conta.Cpf = cpf;
-            }
-
-            break;
-
-          case 3:
-            Console.WriteLine("Digite a nova cidade:");
-
-            var cidade = Console.ReadLine();
-
-            if (cidade != null)
-            {
-              conta.Cidade = cidade;
-            }
-
-            break;
-
-          case 4:
-            Console.WriteLine("Digite o novo saldo:");
-
-            var saldoContaInput = Console.ReadLine();
-
-            if (saldoContaInput == null)
-            {
-              Console.WriteLine("Saldo inválido.");
-
-              return;
-            }
-
-            var saldoConta = float.Parse(saldoContaInput);
-
-            conta.SaldoConta = saldoConta;
-
-            break;
-
-          case 5:
-            Update(id, conta);
-
-            return;
-
-          default:
-            Console.WriteLine("Digite um numero válido.");
-
-            break;
-        }
-      }
-    }
-
-
     static void Main(string[] args)
     {
+#if DEBUG
+      Test();
+#else
       Menu.Principal();
-
-      // var conta = new Conta
-      // {
-      //   Lapide = '\0',
-      //   TotalBytes = 0,
-      //   IdConta = 0,
-      //   NomePessoa = "joao",
-      //   Cpf = "123456789",
-      //   Cidade = "belo horizonte",
-      //   TransferenciasRealizadas = 10,
-      //   SaldoConta = 1000,
-      // };
-
-      // var conta2 = new Conta
-      // {
-      //   Lapide = '\0',
-      //   TotalBytes = 0,
-      //   IdConta = 0,
-      //   NomePessoa = "lucas",
-      //   Cpf = "10987654321",
-      //   Cidade = "alagoas",
-      //   TransferenciasRealizadas = 0,
-      //   SaldoConta = 1000,
-      // };
-
-      // Console.WriteLine(conta);
-
-      // Criar conta(Write): dados a serem digitados(nomePessoa, cpf, estado)
-      // WriteUsuario(conta);
-      // WriteUsuario(conta2);
-
-      // Console.WriteLine(ReadId(2).Item2);
-      // Console.WriteLine(ReadId(3).Item2);
-
-      // MainUpdate();
+#endif
     }
 
-    static byte[] ReverseBytes(byte[] a)
+    static void Test()
     {
-      Array.Reverse(a, 0, a.Length);
+      Console.WriteLine("=== Conta");
 
-      return a;
+      var conta = new Conta
+      {
+        Cidade = "alagoas",
+        Cpf = "123123123",
+        IdConta = 0,
+        Lapide = '\0',
+        NomePessoa = "joao",
+        SaldoConta = 1000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      };
+
+      Console.WriteLine(conta);
+
+      Write(conta);
+
+      Console.WriteLine("=== Obj");
+
+      var obj = ReadId(1);
+
+      Console.WriteLine(obj);
+
+      var conta2 = new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "890890890",
+        IdConta = 3,
+        Lapide = '\0',
+        NomePessoa = "marcelo",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      };
+
+      Update(1, conta2);
+
+      Console.WriteLine("=== Obj2");
+
+      var obj2 = ReadId(1);
+
+      Console.WriteLine(obj2);
     }
 
-    static Conta Read(long ler, SeekOrigin seekOrigin)
+    // incrementa o último id no início do arquivo e retorna o novo id
+    static uint UpdateCabeca()
     {
-      #region Arquivo
-
-      // var ultimoIdBytes = new byte[4];
+      var ultimoId = new byte[4];
 
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      // stream.Read(ultimoIdBytes, 0, ultimoIdBytes.Length);
+      stream.Read(ultimoId, 0, ultimoId.Length);
 
-      stream.Seek(ler, seekOrigin);
+      stream.Position = 0;
+
+      var newId = BitConverter.ToUInt32(Utils.ReverseBytes(ultimoId)) + 1;
+
+      var newIdBytes = Utils.ReverseBytes(BitConverter.GetBytes(newId));
+
+      stream.Write(newIdBytes);
+
+      stream.Close();
+
+      return newId;
+    }
+
+    // marca o registro como excluído, mudando o byte da lápide a partir de um offset específico
+    static void MarcarExcluido(uint posicao)
+    {
+      var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+      stream.Seek(posicao, SeekOrigin.Begin);
+
+      stream.WriteByte((byte)'*');
+
+      stream.Close();
+    }
+
+    // retorna uma conta a partir de um offset e sua origem, lendo o registro a partir daquele offset no arquivo
+    static Conta Read(long offset, SeekOrigin seekOrigin)
+    {
+      #region Arquivo
+
+      var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+      stream.Seek(offset, seekOrigin);
 
       var lapide = (char)stream.ReadByte();
 
@@ -193,7 +111,7 @@ namespace Aeds3TP1
 
       stream.Read(totalBytesBytes, 0, totalBytesBytes.Length);
 
-      totalBytesBytes = ReverseBytes(totalBytesBytes);
+      totalBytesBytes = Utils.ReverseBytes(totalBytesBytes);
 
       var totalBytes = BitConverter.ToUInt32(totalBytesBytes);
 
@@ -205,7 +123,7 @@ namespace Aeds3TP1
 
       stream.Read(idContaBytes, 0, idContaBytes.Length);
 
-      idContaBytes = ReverseBytes(idContaBytes);
+      idContaBytes = Utils.ReverseBytes(idContaBytes);
 
       var idConta = BitConverter.ToUInt32(idContaBytes);
 
@@ -247,25 +165,25 @@ namespace Aeds3TP1
 
       #endregion
 
-      #region Transferencias Realizadas
+      #region Transferencias realizadas
 
       var transferenciasRealizadasBytes = new byte[2];
 
       stream.Read(transferenciasRealizadasBytes, 0, transferenciasRealizadasBytes.Length);
 
-      transferenciasRealizadasBytes = ReverseBytes(transferenciasRealizadasBytes);
+      transferenciasRealizadasBytes = Utils.ReverseBytes(transferenciasRealizadasBytes);
 
       var transferenciasRealizadas = BitConverter.ToUInt16(transferenciasRealizadasBytes);
 
       #endregion
 
-      #region Saldo Conta
+      #region Saldo conta
 
       var saldoContaBytes = new byte[4];
 
       stream.Read(saldoContaBytes, 0, saldoContaBytes.Length);
 
-      saldoContaBytes = ReverseBytes(saldoContaBytes);
+      saldoContaBytes = Utils.ReverseBytes(saldoContaBytes);
 
       var saldoConta = BitConverter.ToSingle(saldoContaBytes);
 
@@ -286,22 +204,23 @@ namespace Aeds3TP1
       };
     }
 
-    static Tuple<uint, Conta> ReadId(uint id) // consulta do usuario a um id especifico
+    // retorna uma tupla com uma conta de um id específico e seu offset no arquivo
+    public static Tuple<uint, Conta> ReadId(uint id)
     {
-      var position = (uint)4; // colocar na posicao da primeira lapide 
+      var position = (uint)4; // colocar na posição da primeira lápide 
       var conta = Read(position, SeekOrigin.Begin);
 
-      while (conta.IdConta != 0) // ver se a posicao existe
+      while (conta.IdConta != 0) // ver se a posição existe
       {
-        if (conta.Lapide == '\0') //verifica a lapide
+        if (conta.Lapide == '\0') // verifica a lápide
         {
-          if (conta.IdConta == id)
+          if (conta.IdConta == id) // verifica se o id bate
           {
             return new Tuple<uint, Conta>(position, conta);
           }
         }
 
-        position += conta.TotalBytes; // usa o pular pra ir pra posicao prox posicao
+        position += conta.TotalBytes; // usa o tamanho junto ao offset atual pra ir para a posição do próximo registro
 
         conta = Read((long)position, SeekOrigin.Begin);
       }
@@ -309,35 +228,21 @@ namespace Aeds3TP1
       return new Tuple<uint, Conta>(position, conta);
     }
 
-    public static void WriteUsuario(Conta conta)
+    // escreve um novo registro no final do arquivo
+    // usado para criar um novo registro
+    public static void Write(Conta conta)
     {
       Write(UpdateCabeca(), 0, conta, SeekOrigin.End);
     }
 
-    static void WritePrograma(uint id, Conta conta, uint posicao, SeekOrigin seekOrigin)
-    {
-      Write(id, posicao, conta, seekOrigin);
-    }
-
-    static uint SomaBytes(Conta conta)
-    {
-      var totalbytes = BitConverter.GetBytes(conta.IdConta).Length +
-        Encoding.Unicode.GetBytes(conta.NomePessoa).Length +
-        Encoding.Unicode.GetBytes(conta.Cpf).Length +
-        Encoding.Unicode.GetBytes(conta.Cidade).Length +
-        BitConverter.GetBytes(conta.TransferenciasRealizadas).Length +
-        BitConverter.GetBytes(conta.SaldoConta).Length + 8;
-
-      return BitConverter.ToUInt32(BitConverter.GetBytes(totalbytes));
-    }
-
+    // escreve um novo registro a partir de um id, a conta, o offset desejado e sua origem
     static void Write(uint id, long posicao, Conta conta, SeekOrigin seekOrigin)
     {
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
       stream.Seek(posicao, seekOrigin);
 
-      var idConta = ReverseBytes(BitConverter.GetBytes(id));
+      var idConta = Utils.ReverseBytes(BitConverter.GetBytes(id));
 
       var nomePessoa = Encoding.Unicode.GetBytes(conta.NomePessoa);
       var nomePessoaLength = (byte)nomePessoa.Length;
@@ -348,15 +253,13 @@ namespace Aeds3TP1
       var cidade = Encoding.Unicode.GetBytes(conta.Cidade);
       var cidadeLength = (byte)cidade.Length;
 
-      var transferenciasRealizadas = ReverseBytes(BitConverter.GetBytes(conta.TransferenciasRealizadas));
+      var transferenciasRealizadas = Utils.ReverseBytes(BitConverter.GetBytes(conta.TransferenciasRealizadas));
 
-      var saldoConta = ReverseBytes(BitConverter.GetBytes(conta.SaldoConta));
+      var saldoConta = Utils.ReverseBytes(BitConverter.GetBytes(conta.SaldoConta));
 
-      var totalbytes = idConta.Length + nomePessoa.Length + 1 + cpf.Length + 1 + cidade.Length + 1 + transferenciasRealizadas.Length + saldoConta.Length + 5;
+      var totalbytes = conta.GetSomaBytes();
 
-      var totalBytesBytes = ReverseBytes(BitConverter.GetBytes(totalbytes));
-
-      // stream.Write(idConta); // escreve os primeiros 4 bytes do arquivo, correspondentes ao último id
+      var totalBytesBytes = Utils.ReverseBytes(BitConverter.GetBytes(totalbytes));
 
       stream.WriteByte((byte)'\0'); // escreve o 5º byte do arquivo, correspondente à lápide
 
@@ -380,59 +283,32 @@ namespace Aeds3TP1
       stream.Close();
     }
 
-    static uint UpdateCabeca()
-    {
-      var ultimoId = new byte[4];
-
-      var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-      stream.Read(ultimoId, 0, ultimoId.Length);
-
-      stream.Position = 0;
-
-      var newId = BitConverter.ToUInt32(ReverseBytes(ultimoId)) + 1;
-
-      var newIdBytes = ReverseBytes(BitConverter.GetBytes(newId));
-
-      stream.Write(newIdBytes);
-
-      stream.Close();
-
-      return newId;
-    }
-
-    static void Lapide(uint posicao)
-    {
-      var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-      stream.Seek(posicao, SeekOrigin.Begin);
-
-      stream.WriteByte((byte)'*');
-
-      stream.Close();
-    }
-
-    static void Update(uint id, Conta contaUsuario)
+    // atualiza um registro de um certo id com os novos dados do registro modificado
+    public static void Update(uint id, Conta contaModificada)
     {
       var obj = ReadId(id);
       var posicao = obj.Item1;
       var conta = obj.Item2;
-      contaUsuario.TotalBytes = SomaBytes(contaUsuario);
 
-      if (conta.TotalBytes < contaUsuario.TotalBytes)
+      contaModificada.TotalBytes = contaModificada.GetSomaBytes();
+
+      if (contaModificada.TotalBytes > conta.TotalBytes)
       {
-        // colocar como morto o atual
-        Lapide(posicao);
-        WritePrograma(id, contaUsuario, 0, SeekOrigin.End);
-      }
-      else if (conta.TotalBytes > contaUsuario.TotalBytes)
-      {
-        contaUsuario.TotalBytes = conta.TotalBytes;
-        WritePrograma(id, contaUsuario, posicao, SeekOrigin.Begin);
+        // o registro modificado é maior que o registro antes da modificação
+        // colocar o registro anterior como excluído e criar um novo
+
+        MarcarExcluido(posicao);
+
+        Write(id, 0, contaModificada, SeekOrigin.End);
       }
       else
       {
-        WritePrograma(id, contaUsuario, posicao, SeekOrigin.Begin);
+        // o registro modificado é menor ou do mesmo tamanho que o registro antes da modificação
+        // sobrescrever o registro antigo com o novo
+
+        contaModificada.TotalBytes = conta.TotalBytes;
+
+        Write(id, posicao, contaModificada, SeekOrigin.Begin);
       }
     }
   }

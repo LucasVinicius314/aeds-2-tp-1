@@ -16,11 +16,7 @@ namespace Aeds3TP1
   4 - Deletar registro
   5 - Sair");
 
-#if DEBUG
-          var input = "0";
-#else
           var input = Console.ReadLine();
-#endif
 
           if (input == null)
           {
@@ -30,22 +26,30 @@ namespace Aeds3TP1
           switch (input)
           {
             case "0":
-              Create();
+              // Criar conta bancária
+              CriarConta();
               break;
 
             case "1":
+              // Realizar transferência
               throw new NotImplementedException();
 
             case "2":
-              throw new NotImplementedException();
+              // Ler registro
+              LerRegistro();
+              break;
 
             case "3":
-              throw new NotImplementedException();
+              // Atualizar registro
+              AtualizarRegistro();
+              break;
 
             case "4":
+              // Deletar registro
               throw new NotImplementedException();
 
             case "5":
+              // Sair
               return;
 
             default:
@@ -66,7 +70,7 @@ namespace Aeds3TP1
         }
       }
 
-      static void Create()
+      static void CriarConta()
       {
         Console.WriteLine("=== Criar conta bancária");
 
@@ -88,11 +92,12 @@ namespace Aeds3TP1
           {
             Console.WriteLine("Digite o nome:");
 
-#if DEBUG
-            var nome = "marcelo";
-#else
-          var nome = Console.ReadLine();
-#endif
+            var nome = Console.ReadLine();
+
+            if (nome == null)
+            {
+              throw new Exception();
+            }
 
             conta.NomePessoa = nome;
 
@@ -110,11 +115,12 @@ namespace Aeds3TP1
           {
             Console.WriteLine("Digite o CPF:");
 
-#if DEBUG
-            var cpf = "098098098";
-#else
-          var cpf = Console.ReadLine();
-#endif
+            var cpf = Console.ReadLine();
+
+            if (cpf == null)
+            {
+              throw new Exception();
+            }
 
             conta.Cpf = cpf;
 
@@ -130,13 +136,14 @@ namespace Aeds3TP1
         {
           try
           {
-            Console.WriteLine("Digite a Cidade:");
+            Console.WriteLine("Digite a cidade:");
 
-#if DEBUG
-            var cidade = "maringá";
-#else
-          var cidade = Console.ReadLine();
-#endif
+            var cidade = Console.ReadLine();
+
+            if (cidade == null)
+            {
+              throw new Exception();
+            }
 
             conta.Cidade = cidade;
 
@@ -148,7 +155,153 @@ namespace Aeds3TP1
           }
         }
 
-        Program.WriteUsuario(conta);
+        Program.Write(conta);
+      }
+
+      static void LerRegistro()
+      {
+        throw new NotImplementedException();
+      }
+
+      static void AtualizarRegistro()
+      {
+        Console.WriteLine("=== Atualizar registro");
+
+        Console.WriteLine("Digite o ID da conta a ser alterada:");
+
+        var idInput = Console.ReadLine();
+
+        if (idInput == null)
+        {
+          Console.WriteLine("Id inválido.");
+
+          return;
+        }
+
+        var id = uint.Parse(idInput);
+
+        var res = Program.ReadId(id);
+
+        var posicao = res.Item1;
+        var conta = res.Item2;
+
+        while (true)
+        {
+          Console.WriteLine(@"Qual atributo deseja alterar?
+0 - Nome
+1 - CPF
+2 - Cidade
+3 - Saldo
+4 - Voltar");
+
+          var resposta = Console.ReadLine();
+
+          if (resposta == null)
+          {
+            Console.WriteLine("Valor inválido.");
+
+            return;
+          }
+
+          switch (resposta)
+          {
+            case "0":
+              try
+              {
+                Console.WriteLine("Digite o novo nome:");
+
+                var nome = Console.ReadLine();
+
+                if (nome == null)
+                {
+                  throw new Exception();
+                }
+
+                conta.NomePessoa = nome;
+              }
+              catch (Exception)
+              {
+                Console.WriteLine("Nome inválido.");
+              }
+
+              break;
+
+            case "1":
+              try
+              {
+                Console.WriteLine("Digite o novo CPF:");
+
+                var cpf = Console.ReadLine();
+
+                if (cpf == null)
+                {
+                  throw new Exception();
+                }
+
+                conta.Cpf = cpf;
+              }
+              catch (Exception)
+              {
+                Console.WriteLine("CPF inválido.");
+              }
+
+              break;
+
+            case "2":
+              try
+              {
+                Console.WriteLine("Digite a nova cidade:");
+
+                var cidade = Console.ReadLine();
+
+                if (cidade == null)
+                {
+                  throw new Exception();
+                }
+
+                conta.Cidade = cidade;
+              }
+              catch (Exception)
+              {
+                Console.WriteLine("Cidade inválida.");
+              }
+
+              break;
+
+            case "3":
+              try
+              {
+                Console.WriteLine("Digite o novo saldo:");
+
+                var saldoContaInput = Console.ReadLine();
+
+                if (saldoContaInput == null)
+                {
+                  throw new Exception();
+                }
+
+                var saldoConta = float.Parse(saldoContaInput);
+
+                conta.SaldoConta = saldoConta;
+              }
+              catch (Exception)
+              {
+                Console.WriteLine("Saldo inválido.");
+              }
+
+              break;
+
+            case "4":
+              Program.Update(id, conta);
+
+              return;
+
+            default:
+              Console.WriteLine("Digite um valor válido.");
+
+              break;
+          }
+        }
       }
     }
   }

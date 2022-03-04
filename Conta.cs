@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace Aeds3TP1
 {
   class Conta
@@ -41,6 +43,18 @@ namespace Aeds3TP1
     string nomePessoa = String.Empty;
     string cpf = String.Empty;
     string cidade = String.Empty;
+
+    public uint GetSomaBytes()
+    {
+      var totalbytes = BitConverter.GetBytes(IdConta).Length +
+        Encoding.Unicode.GetBytes(NomePessoa).Length +
+        Encoding.Unicode.GetBytes(Cpf).Length +
+        Encoding.Unicode.GetBytes(Cidade).Length +
+        BitConverter.GetBytes(TransferenciasRealizadas).Length +
+        BitConverter.GetBytes(SaldoConta).Length + 8;
+
+      return BitConverter.ToUInt32(BitConverter.GetBytes(totalbytes));
+    }
 
     public override string ToString()
     {
