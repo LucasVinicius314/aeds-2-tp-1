@@ -166,7 +166,6 @@ namespace Aeds3TP1
 
       static void ExcluirRegistro()
       {
-
         Console.WriteLine("=== Excluir registro");
 
         Console.WriteLine("Digite o ID da conta a ser excluida:");
