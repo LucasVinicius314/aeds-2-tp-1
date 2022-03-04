@@ -46,7 +46,8 @@ namespace Aeds3TP1
 
             case "4":
               // Deletar registro
-              throw new NotImplementedException();
+              ExcluirRegistro();
+              break;
 
             case "5":
               // Sair
@@ -163,6 +164,27 @@ namespace Aeds3TP1
         throw new NotImplementedException();
       }
 
+      static void ExcluirRegistro()
+      {
+
+        Console.WriteLine("=== Excluir registro");
+
+        Console.WriteLine("Digite o ID da conta a ser excluida:");
+
+        var idInput = Console.ReadLine();
+
+        if (idInput == null)
+        {
+          Console.WriteLine("Id inválido.");
+
+          return;
+        }
+
+        var id = uint.Parse(idInput);
+
+        Program.ExcluirId(id);
+      }
+      
       static void AtualizarRegistro()
       {
         Console.WriteLine("=== Atualizar registro");

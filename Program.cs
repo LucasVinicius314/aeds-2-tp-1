@@ -84,6 +84,12 @@ namespace Aeds3TP1
       return newId;
     }
 
+    public static void ExcluirId(uint id)
+    {
+      uint posicao = ReadId(id).Item1;
+      MarcarExcluido(posicao);
+    }
+
     // marca o registro como excluído, mudando o byte da lápide a partir de um offset específico
     static void MarcarExcluido(uint posicao)
     {
