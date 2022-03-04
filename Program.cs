@@ -11,15 +11,10 @@ namespace Aeds3TP1
       Console.WriteLine("Digite o ID da conta a ser alterada:");
 
 #if DEBUG
-
       var idInput = "1";
-
 #else
-
       var idInput = Console.ReadLine();
-
 #endif
-
 
       if (idInput == null)
       {
@@ -41,15 +36,10 @@ namespace Aeds3TP1
         Console.WriteLine("1 - Nome, 2 - CPF, 3 - Cidade, 4 - Saldo, 5 - Sair");
 
 #if DEBUG
-
         var respostaInput = "1";
-
 #else
-
       var respostaInput = Console.ReadLine();
-
 #endif
-
 
         if (respostaInput == null)
         {
@@ -65,7 +55,11 @@ namespace Aeds3TP1
           case 1:
             Console.WriteLine("Digite o novo nome:");
 
-            var nome = /* Console.ReadLine() */ "caio";
+#if DEBUG
+            var nome = "caio";
+#else
+            var nome = Console.ReadLine();
+#endif
 
             if (nome != null)
             {
@@ -73,19 +67,15 @@ namespace Aeds3TP1
             }
 
 #if DEBUG
-
             return;
-
 #else
-
             break;
-
 #endif
 
           case 2:
             Console.WriteLine("Digite o novo CPF:");
 
-            var cpf = /* Console.ReadLine() */ "123123123";
+            var cpf = Console.ReadLine();
 
             if (cpf != null)
             {
@@ -97,7 +87,7 @@ namespace Aeds3TP1
           case 3:
             Console.WriteLine("Digite a nova cidade:");
 
-            var cidade = /* Console.ReadLine() */ "São Paulo";
+            var cidade = Console.ReadLine();
 
             if (cidade != null)
             {
@@ -109,12 +99,18 @@ namespace Aeds3TP1
           case 4:
             Console.WriteLine("Digite o novo saldo:");
 
-            var saldoConta = /* Console.ReadLine() */ 2000f;
+            var saldoContaInput = Console.ReadLine();
 
-            // if (saldoConta != null)
-            // {
+            if (saldoContaInput == null)
+            {
+              Console.WriteLine("Saldo inválido.");
+
+              return;
+            }
+
+            var saldoConta = float.Parse(saldoContaInput);
+
             conta.SaldoConta = saldoConta;
-            // }
 
             break;
 
@@ -131,108 +127,11 @@ namespace Aeds3TP1
       }
     }
 
-    static void MainCreate()
-    {
-      var conta = new Conta
-      {
-        Lapide = '\0',
-        TotalBytes = 0,
-        IdConta = 0,
-        NomePessoa = "",
-        Cpf = "",
-        Cidade = "",
-        TransferenciasRealizadas = 0,
-        SaldoConta = 1000,
-      };
-
-      // nomePessoa, cpf, estado
-
-      while (true)
-      {
-        try
-        {
-          Console.WriteLine("Digite o nome:");
-
-#if DEBUG
-          var nome = "marcelo";
-#else
-          var nome = Console.ReadLine();
-#endif
-
-          if (nome == null)
-          {
-            throw new Exception();
-          }
-
-          conta.NomePessoa = nome;
-
-          break;
-        }
-        catch (Exception)
-        {
-          Console.WriteLine("Nome inválido.");
-        }
-      }
-
-      while (true)
-      {
-        try
-        {
-          Console.WriteLine("Digite o CPF:");
-
-#if DEBUG
-          var cpf = "098098098";
-#else
-          var cpf = Console.ReadLine();
-#endif
-
-          if (cpf == null)
-          {
-            throw new Exception();
-          }
-
-          conta.Cpf = cpf;
-
-          break;
-        }
-        catch (Exception)
-        {
-          Console.WriteLine("CPF inválido.");
-        }
-      }
-
-      while (true)
-      {
-        try
-        {
-          Console.WriteLine("Digite a Cidade:");
-
-#if DEBUG
-          var cidade = "maringá";
-#else
-          var cidade = Console.ReadLine();
-#endif
-
-          if (cidade == null)
-          {
-            throw new Exception();
-          }
-
-          conta.Cidade = cidade;
-
-          break;
-        }
-        catch (Exception)
-        {
-          Console.WriteLine("Cidade inválida.");
-        }
-      }
-
-      WriteUsuario(conta);
-    }
 
     static void Main(string[] args)
     {
+      Menu.Principal();
+
       // var conta = new Conta
       // {
       //   Lapide = '\0',
@@ -265,8 +164,6 @@ namespace Aeds3TP1
 
       // Console.WriteLine(ReadId(2).Item2);
       // Console.WriteLine(ReadId(3).Item2);
-
-      MainCreate();
 
       // MainUpdate();
     }
@@ -412,7 +309,7 @@ namespace Aeds3TP1
       return new Tuple<uint, Conta>(position, conta);
     }
 
-    static void WriteUsuario(Conta conta)
+    public static void WriteUsuario(Conta conta)
     {
       Write(UpdateCabeca(), 0, conta, SeekOrigin.End);
     }
@@ -534,7 +431,9 @@ namespace Aeds3TP1
         WritePrograma(id, contaUsuario, posicao, SeekOrigin.Begin);
       }
       else
+      {
         WritePrograma(id, contaUsuario, posicao, SeekOrigin.Begin);
+      }
     }
   }
 }

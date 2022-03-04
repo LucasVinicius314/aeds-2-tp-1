@@ -5,11 +5,42 @@ namespace Aeds3TP1
     public char Lapide { get; set; }
     public uint TotalBytes { get; set; }
     public uint IdConta { get; set; }
-    public string? NomePessoa { get; set; }
-    public string? Cpf { get; set; }
-    public string? Cidade { get; set; }
+    public string NomePessoa
+    {
+      get { return nomePessoa; }
+      set
+      {
+        if (value == null) throw new FormatException();
+
+        nomePessoa = value;
+      }
+    }
+    public string Cpf
+    {
+      get { return cpf; }
+      set
+      {
+        if (value == null) throw new FormatException();
+
+        cpf = value;
+      }
+    }
+    public string Cidade
+    {
+      get { return cidade; }
+      set
+      {
+        if (value == null) throw new FormatException();
+
+        cidade = value;
+      }
+    }
     public ushort TransferenciasRealizadas { get; set; }
     public float SaldoConta { get; set; }
+
+    string nomePessoa = String.Empty;
+    string cpf = String.Empty;
+    string cidade = String.Empty;
 
     public override string ToString()
     {
