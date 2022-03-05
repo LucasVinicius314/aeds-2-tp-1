@@ -161,7 +161,24 @@ namespace Aeds3TP1
 
       static void LerRegistro()
       {
-        throw new NotImplementedException();
+        Console.WriteLine("=== Ler registro");
+
+        Console.WriteLine("Digite o ID da conta a ser lida:");
+
+        var idInput = Console.ReadLine();
+
+        if (idInput == null)
+        {
+          Console.WriteLine("Id inválido.");
+
+          return;
+        }
+        
+        var id = uint.Parse(idInput);
+
+        var conta = Program.ReadId(id);
+
+        Console.WriteLine(conta);
       }
 
       static void ExcluirRegistro()
