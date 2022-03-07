@@ -32,7 +32,8 @@ namespace Aeds3TP1
 
             case "1":
               // Realizar transferência
-              throw new NotImplementedException();
+              Transferencia();
+              break;
 
             case "2":
               // Ler registro
@@ -157,6 +158,73 @@ namespace Aeds3TP1
         }
 
         Program.Write(conta);
+      }
+      
+      static void Transferencia()
+      {
+        Console.WriteLine("=== Realizar transferência");
+
+        Console.WriteLine("Digite o ID da conta a ser debitado o valor:");
+
+        var idInput1 = Console.ReadLine();
+
+        if (idInput1 == null)
+        {
+          Console.WriteLine("Id inválido.");
+
+          return;
+        }
+        
+        var idDebitar = uint.Parse(idInput1);
+
+        var contaDebitar = Program.ReadId(idDebitar).Item2;
+
+        if (contaDebitar.Lapide == '*' || contaDebitar.IdConta == 0 )
+        {
+          Console.WriteLine("Id inválido.");
+
+          return;
+        }
+
+        Console.WriteLine("Digite o valor a ser debitado:");
+
+        var valorDebitado = Console.ReadLine();
+
+        if (valorDebitado == null)
+        {
+          Console.WriteLine("Valor inválido.");
+
+          return;
+        }
+
+        var debitar = float.Parse(valorDebitado);
+
+        Console.WriteLine("Digite o ID da conta a ser creditado o valor:");
+
+        var idInput2 = Console.ReadLine();
+
+        if (idInput2 == null)
+        {
+          Console.WriteLine("Id inválido.");
+
+          return;
+        }
+
+        var idCreditar = uint.Parse(idInput2);
+
+        var contaCreditar = Program.ReadId(idCreditar).Item2;
+
+        if (contaCreditar.Lapide == '*' || contaDebitar.IdConta == 0)
+        {
+          Console.WriteLine("Id inválido.");
+
+          return;
+        }
+
+        var resultado = Program.TransferenciaConta(contaDebitar,debitar,contaCreditar);
+
+        if(resultado != null)
+          Console.WriteLine(resultado);
       }
 
       static void LerRegistro()

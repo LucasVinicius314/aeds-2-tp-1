@@ -317,5 +317,23 @@ namespace Aeds3TP1
         Write(id, posicao, contaModificada, SeekOrigin.Begin);
       }
     }
+
+    public static string? TransferenciaConta(Conta contaDebitar, float debitar,Conta contaCreditar)
+    {
+      if(contaDebitar.SaldoConta < debitar){
+        return "Saldo na conta insuficiente.";
+      }
+      
+      contaDebitar.SaldoConta -= debitar;
+      contaDebitar.TransferenciasRealizadas += 1;
+
+      contaCreditar.SaldoConta += debitar;
+      contaCreditar.TransferenciasRealizadas += 1;
+
+      Update(contaDebitar.IdConta,contaDebitar);
+      Update(contaCreditar.IdConta,contaCreditar);
+
+      return null;
+    }
   }
 }
