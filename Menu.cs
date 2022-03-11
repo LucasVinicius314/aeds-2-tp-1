@@ -119,7 +119,7 @@ namespace Aeds3TP1
 
             var cpf = Console.ReadLine();
 
-            if (cpf == null)
+            if (cpf == null || cpf.Length != 11)
             {
               throw new Exception();
             }
@@ -244,8 +244,8 @@ namespace Aeds3TP1
         
         var id = uint.Parse(idInput);
 
-        var conta = Program.ReadId(id);
-
+        var conta = Program.ReadId(id).Item2;
+        
         Console.WriteLine(conta);
       }
 
@@ -290,6 +290,8 @@ namespace Aeds3TP1
 
         var posicao = res.Item1;
         var conta = res.Item2;
+
+        Console.WriteLine(conta);
 
         while (true)
         {
@@ -339,7 +341,7 @@ namespace Aeds3TP1
 
                 var cpf = Console.ReadLine();
 
-                if (cpf == null)
+                if (cpf == null || cpf.Length != 11)
                 {
                   throw new Exception();
                 }

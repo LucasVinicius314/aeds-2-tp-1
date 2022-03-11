@@ -37,7 +37,7 @@ namespace Aeds3TP1
 
       Console.WriteLine("=== Obj");
 
-      var obj = ReadId(1);
+      var obj = ReadId(3);
 
       Console.WriteLine(obj);
 
