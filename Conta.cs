@@ -4,6 +4,7 @@ namespace Aeds3TP1
 {
   class Conta
   {
+    // getters e setters
     public char Lapide { get; set; }
     public uint TotalBytes { get; set; }
     public uint IdConta { get; set; }
@@ -44,6 +45,7 @@ namespace Aeds3TP1
     string cpf = String.Empty;
     string cidade = String.Empty;
 
+    // retorna o tamanho em bytes dos atributos do registro
     public uint GetSomaBytes()
     {
       var totalbytes = BitConverter.GetBytes(IdConta).Length +
@@ -56,6 +58,7 @@ namespace Aeds3TP1
       return BitConverter.ToUInt32(BitConverter.GetBytes(totalbytes));
     }
 
+    // override no toString padrão para melhorar a visualização do objeto
     public override string ToString()
     {
       var hashCode = base.GetHashCode();
