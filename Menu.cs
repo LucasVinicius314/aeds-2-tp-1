@@ -1,7 +1,9 @@
 namespace Aeds3TP1
 {
+  // classe para representar a "interface", nesse caso a interação do usuário com o terminal
   class Menu
   {
+    // método responsável pelo controle do menu principal
     public static void Principal()
     {
       while (true)
@@ -16,7 +18,7 @@ namespace Aeds3TP1
   4 - Deletar registro
   5 - Sair");
 
-          var input = Console.ReadLine();
+          var input = Console.ReadLine(); // input do usuário
 
           if (input == null)
           {
@@ -58,12 +60,6 @@ namespace Aeds3TP1
               throw new Exception();
           }
         }
-        catch (NotImplementedException)
-        {
-          Console.WriteLine("Não implementado.");
-
-          throw;
-        }
         catch (Exception)
         {
           Console.WriteLine("Opção inválida.");
@@ -71,344 +67,349 @@ namespace Aeds3TP1
           throw;
         }
       }
+    }
 
-      static void CriarConta()
+    // método responsável pelo controle do menu de criação de conta
+    static void CriarConta()
+    {
+      Console.WriteLine("=== Criar conta bancária");
+
+      var conta = new Conta
       {
-        Console.WriteLine("=== Criar conta bancária");
+        Lapide = '\0',
+        TotalBytes = 0,
+        IdConta = 0,
+        NomePessoa = "",
+        Cpf = "",
+        Cidade = "",
+        TransferenciasRealizadas = 0,
+        SaldoConta = 1000,
+      };
 
-        var conta = new Conta
+      while (true)
+      {
+        try
         {
-          Lapide = '\0',
-          TotalBytes = 0,
-          IdConta = 0,
-          NomePessoa = "",
-          Cpf = "",
-          Cidade = "",
-          TransferenciasRealizadas = 0,
-          SaldoConta = 1000,
-        };
+          Console.WriteLine("Digite o nome:");
 
-        while (true)
-        {
-          try
+          var nome = Console.ReadLine(); // input do usuário
+
+          if (nome == null)
           {
-            Console.WriteLine("Digite o nome:");
-
-            var nome = Console.ReadLine();
-
-            if (nome == null)
-            {
-              throw new Exception();
-            }
-
-            conta.NomePessoa = nome;
-
-            break;
+            throw new Exception();
           }
-          catch (Exception)
-          {
-            Console.WriteLine("Nome inválido.");
-          }
+
+          conta.NomePessoa = nome;
+
+          break;
         }
-
-        while (true)
+        catch (Exception)
         {
-          try
-          {
-            Console.WriteLine("Digite o CPF:");
-
-            var cpf = Console.ReadLine();
-
-            if (cpf == null || cpf.Length != 11)
-            {
-              throw new Exception();
-            }
-
-            conta.Cpf = cpf;
-
-            break;
-          }
-          catch (Exception)
-          {
-            Console.WriteLine("CPF inválido.");
-          }
+          Console.WriteLine("Nome inválido.");
         }
-
-        while (true)
-        {
-          try
-          {
-            Console.WriteLine("Digite a cidade:");
-
-            var cidade = Console.ReadLine();
-
-            if (cidade == null)
-            {
-              throw new Exception();
-            }
-
-            conta.Cidade = cidade;
-
-            break;
-          }
-          catch (Exception)
-          {
-            Console.WriteLine("Cidade inválida.");
-          }
-        }
-
-        Program.Write(conta);
       }
 
-      static void Transferencia()
+      while (true)
       {
-        Console.WriteLine("=== Realizar transferência");
-
-        Console.WriteLine("Digite o ID da conta a ser debitado o valor:");
-
-        var idInput1 = Console.ReadLine();
-
-        if (idInput1 == null)
+        try
         {
-          Console.WriteLine("Id inválido.");
+          Console.WriteLine("Digite o CPF:");
 
-          return;
+          var cpf = Console.ReadLine(); // input do usuário
+
+          if (cpf == null || cpf.Length != 11)
+          {
+            throw new Exception();
+          }
+
+          conta.Cpf = cpf;
+
+          break;
         }
-
-        var idDebitar = uint.Parse(idInput1);
-
-        var contaDebitar = Program.ReadId(idDebitar).Item2;
-
-        if (contaDebitar.Lapide == '*' || contaDebitar.IdConta == 0)
+        catch (Exception)
         {
-          Console.WriteLine("Id inválido.");
-
-          return;
+          Console.WriteLine("CPF inválido.");
         }
-
-        Console.WriteLine("Digite o valor a ser debitado:");
-
-        var valorDebitado = Console.ReadLine();
-
-        if (valorDebitado == null)
-        {
-          Console.WriteLine("Valor inválido.");
-
-          return;
-        }
-
-        var debitar = float.Parse(valorDebitado);
-
-        Console.WriteLine("Digite o ID da conta a ser creditado o valor:");
-
-        var idInput2 = Console.ReadLine();
-
-        if (idInput2 == null)
-        {
-          Console.WriteLine("Id inválido.");
-
-          return;
-        }
-
-        var idCreditar = uint.Parse(idInput2);
-
-        var contaCreditar = Program.ReadId(idCreditar).Item2;
-
-        if (contaCreditar.Lapide == '*' || contaDebitar.IdConta == 0)
-        {
-          Console.WriteLine("Id inválido.");
-
-          return;
-        }
-
-        var resultado = Program.TransferenciaConta(contaDebitar, debitar, contaCreditar);
-
-        if (resultado != null)
-          Console.WriteLine(resultado);
       }
 
-      static void LerRegistro()
+      while (true)
       {
-        Console.WriteLine("=== Ler registro");
-
-        Console.WriteLine("Digite o ID da conta a ser lida:");
-
-        var idInput = Console.ReadLine();
-
-        if (idInput == null)
+        try
         {
-          Console.WriteLine("Id inválido.");
+          Console.WriteLine("Digite a cidade:");
 
-          return;
+          var cidade = Console.ReadLine(); // input do usuário
+
+          if (cidade == null)
+          {
+            throw new Exception();
+          }
+
+          conta.Cidade = cidade;
+
+          break;
         }
-
-        var id = uint.Parse(idInput);
-
-        var conta = Program.ReadId(id).Item2;
-
-        Console.WriteLine(conta);
+        catch (Exception)
+        {
+          Console.WriteLine("Cidade inválida.");
+        }
       }
 
-      static void ExcluirRegistro()
+      Program.Write(conta);
+    }
+
+    // método responsável pelo controle do menu de transferência
+    static void Transferencia()
+    {
+      Console.WriteLine("=== Realizar transferência");
+
+      Console.WriteLine("Digite o ID da conta a ser debitado o valor:");
+
+      var idInput1 = Console.ReadLine(); // input do usuário
+
+      if (idInput1 == null)
       {
-        Console.WriteLine("=== Excluir registro");
+        Console.WriteLine("Id inválido.");
 
-        Console.WriteLine("Digite o ID da conta a ser excluida:");
-
-        var idInput = Console.ReadLine();
-
-        if (idInput == null)
-        {
-          Console.WriteLine("Id inválido.");
-
-          return;
-        }
-
-        var id = uint.Parse(idInput);
-
-        Program.ExcluirId(id);
+        return;
       }
 
-      static void AtualizarRegistro()
+      var idDebitar = uint.Parse(idInput1);
+
+      var contaDebitar = Program.ReadId(idDebitar).Item2;
+
+      if (contaDebitar.Lapide == '*' || contaDebitar.IdConta == 0)
       {
-        Console.WriteLine("=== Atualizar registro");
+        Console.WriteLine("Id inválido.");
 
-        Console.WriteLine("Digite o ID da conta a ser alterada:");
+        return;
+      }
 
-        var idInput = Console.ReadLine();
+      Console.WriteLine("Digite o valor a ser debitado:");
 
-        if (idInput == null)
-        {
-          Console.WriteLine("Id inválido.");
+      var valorDebitado = Console.ReadLine(); // input do usuário
 
-          return;
-        }
+      if (valorDebitado == null)
+      {
+        Console.WriteLine("Valor inválido.");
 
-        var id = uint.Parse(idInput);
+        return;
+      }
 
-        var res = Program.ReadId(id);
+      var debitar = float.Parse(valorDebitado);
 
-        var posicao = res.Item1;
-        var conta = res.Item2;
+      Console.WriteLine("Digite o ID da conta a ser creditado o valor:");
 
-        Console.WriteLine(conta);
+      var idInput2 = Console.ReadLine(); // input do usuário
 
-        while (true)
-        {
-          Console.WriteLine(@"Qual atributo deseja alterar?
+      if (idInput2 == null)
+      {
+        Console.WriteLine("Id inválido.");
+
+        return;
+      }
+
+      var idCreditar = uint.Parse(idInput2);
+
+      var contaCreditar = Program.ReadId(idCreditar).Item2;
+
+      if (contaCreditar.Lapide == '*' || contaDebitar.IdConta == 0)
+      {
+        Console.WriteLine("Id inválido.");
+
+        return;
+      }
+
+      var resultado = Program.TransferenciaConta(contaDebitar, debitar, contaCreditar);
+
+      if (resultado != null)
+        Console.WriteLine(resultado);
+    }
+
+    // método responsável pelo controle do menu de leitura de registro
+    static void LerRegistro()
+    {
+      Console.WriteLine("=== Ler registro");
+
+      Console.WriteLine("Digite o ID da conta a ser lida:");
+
+      var idInput = Console.ReadLine(); // input do usuário
+
+      if (idInput == null)
+      {
+        Console.WriteLine("Id inválido.");
+
+        return;
+      }
+
+      var id = uint.Parse(idInput);
+
+      var conta = Program.ReadId(id).Item2;
+
+      Console.WriteLine(conta);
+    }
+
+    // método responsável pelo controle do menu de exclusão de registro
+    static void ExcluirRegistro()
+    {
+      Console.WriteLine("=== Excluir registro");
+
+      Console.WriteLine("Digite o ID da conta a ser excluida:");
+
+      var idInput = Console.ReadLine(); // input do usuário
+
+      if (idInput == null)
+      {
+        Console.WriteLine("Id inválido.");
+
+        return;
+      }
+
+      var id = uint.Parse(idInput);
+
+      Program.ExcluirId(id);
+    }
+
+    // método responsável pelo controle do menu de atualização de registro
+    static void AtualizarRegistro()
+    {
+      Console.WriteLine("=== Atualizar registro");
+
+      Console.WriteLine("Digite o ID da conta a ser alterada:");
+
+      var idInput = Console.ReadLine(); // input do usuário
+
+      if (idInput == null)
+      {
+        Console.WriteLine("Id inválido.");
+
+        return;
+      }
+
+      var id = uint.Parse(idInput);
+
+      var res = Program.ReadId(id);
+
+      var posicao = res.Item1;
+      var conta = res.Item2;
+
+      Console.WriteLine(conta);
+
+      while (true)
+      {
+        Console.WriteLine(@"Qual atributo deseja alterar?
 0 - Nome
 1 - CPF
 2 - Cidade
 3 - Saldo
 4 - Voltar");
 
-          var resposta = Console.ReadLine();
+        var resposta = Console.ReadLine(); // input do usuário
 
-          if (resposta == null)
-          {
-            Console.WriteLine("Valor inválido.");
+        if (resposta == null)
+        {
+          Console.WriteLine("Valor inválido.");
+
+          return;
+        }
+
+        switch (resposta)
+        {
+          case "0":
+            try
+            {
+              Console.WriteLine("Digite o novo nome:");
+
+              var nome = Console.ReadLine(); // input do usuário
+
+              if (nome == null)
+              {
+                throw new Exception();
+              }
+
+              conta.NomePessoa = nome;
+            }
+            catch (Exception)
+            {
+              Console.WriteLine("Nome inválido.");
+            }
+
+            break;
+
+          case "1":
+            try
+            {
+              Console.WriteLine("Digite o novo CPF:");
+
+              var cpf = Console.ReadLine(); // input do usuário
+
+              if (cpf == null || cpf.Length != 11)
+              {
+                throw new Exception();
+              }
+
+              conta.Cpf = cpf;
+            }
+            catch (Exception)
+            {
+              Console.WriteLine("CPF inválido.");
+            }
+
+            break;
+
+          case "2":
+            try
+            {
+              Console.WriteLine("Digite a nova cidade:");
+
+              var cidade = Console.ReadLine(); // input do usuário
+
+              if (cidade == null)
+              {
+                throw new Exception();
+              }
+
+              conta.Cidade = cidade;
+            }
+            catch (Exception)
+            {
+              Console.WriteLine("Cidade inválida.");
+            }
+
+            break;
+
+          case "3":
+            try
+            {
+              Console.WriteLine("Digite o novo saldo:");
+
+              var saldoContaInput = Console.ReadLine(); // input do usuário
+
+              if (saldoContaInput == null)
+              {
+                throw new Exception();
+              }
+
+              var saldoConta = float.Parse(saldoContaInput);
+
+              conta.SaldoConta = saldoConta;
+            }
+            catch (Exception)
+            {
+              Console.WriteLine("Saldo inválido.");
+            }
+
+            break;
+
+          case "4":
+            Program.Update(id, conta);
 
             return;
-          }
 
-          switch (resposta)
-          {
-            case "0":
-              try
-              {
-                Console.WriteLine("Digite o novo nome:");
+          default:
+            Console.WriteLine("Digite um valor válido.");
 
-                var nome = Console.ReadLine();
-
-                if (nome == null)
-                {
-                  throw new Exception();
-                }
-
-                conta.NomePessoa = nome;
-              }
-              catch (Exception)
-              {
-                Console.WriteLine("Nome inválido.");
-              }
-
-              break;
-
-            case "1":
-              try
-              {
-                Console.WriteLine("Digite o novo CPF:");
-
-                var cpf = Console.ReadLine();
-
-                if (cpf == null || cpf.Length != 11)
-                {
-                  throw new Exception();
-                }
-
-                conta.Cpf = cpf;
-              }
-              catch (Exception)
-              {
-                Console.WriteLine("CPF inválido.");
-              }
-
-              break;
-
-            case "2":
-              try
-              {
-                Console.WriteLine("Digite a nova cidade:");
-
-                var cidade = Console.ReadLine();
-
-                if (cidade == null)
-                {
-                  throw new Exception();
-                }
-
-                conta.Cidade = cidade;
-              }
-              catch (Exception)
-              {
-                Console.WriteLine("Cidade inválida.");
-              }
-
-              break;
-
-            case "3":
-              try
-              {
-                Console.WriteLine("Digite o novo saldo:");
-
-                var saldoContaInput = Console.ReadLine();
-
-                if (saldoContaInput == null)
-                {
-                  throw new Exception();
-                }
-
-                var saldoConta = float.Parse(saldoContaInput);
-
-                conta.SaldoConta = saldoConta;
-              }
-              catch (Exception)
-              {
-                Console.WriteLine("Saldo inválido.");
-              }
-
-              break;
-
-            case "4":
-              Program.Update(id, conta);
-
-              return;
-
-            default:
-              Console.WriteLine("Digite um valor válido.");
-
-              break;
-          }
+            break;
         }
       }
     }

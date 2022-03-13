@@ -4,10 +4,15 @@ namespace Aeds3TP1
 {
   class Program
   {
+    // caminho do arquivo de dados
     static string filePath = "data.dat";
 
     static void Main(string[] args)
     {
+      // separação do caminho de execução
+      // executar o método de teste caso esteja rodando como debug
+      // executar o programa normalmente caso não esteja rodando como debug
+
 #if DEBUG
       Test();
 #else
@@ -15,6 +20,7 @@ namespace Aeds3TP1
 #endif
     }
 
+    // método de teste para testar o funcionamento das operações de forma mais isolada
     static void Test()
     {
       Console.WriteLine("=== Conta");
@@ -33,11 +39,11 @@ namespace Aeds3TP1
 
       Console.WriteLine(conta);
 
-      Write(conta);
+      Write(conta); // teste de escrita
 
       Console.WriteLine("=== Obj");
 
-      var obj = ReadId(3);
+      var obj = ReadId(1); // teste de leitura
 
       Console.WriteLine(obj);
 
@@ -53,11 +59,11 @@ namespace Aeds3TP1
         TransferenciasRealizadas = 0,
       };
 
-      Update(1, conta2);
+      Update(1, conta2); // teste de atualização
 
       Console.WriteLine("=== Obj2");
 
-      var obj2 = ReadId(1);
+      var obj2 = ReadId(1); // teste de leitura
 
       Console.WriteLine(obj2);
     }
@@ -73,20 +79,22 @@ namespace Aeds3TP1
 
       stream.Position = 0;
 
-      var newId = BitConverter.ToUInt32(Utils.ReverseBytes(ultimoId)) + 1;
+      var newId = BitConverter.ToUInt32(Utils.ReverseBytes(ultimoId)) + 1; // converte e incrementa
 
       var newIdBytes = Utils.ReverseBytes(BitConverter.GetBytes(newId));
 
-      stream.Write(newIdBytes);
+      stream.Write(newIdBytes); // escreve o id incrementado
 
       stream.Close();
 
       return newId;
     }
 
+    // marca um registro como excluído a aprtir de um id
     public static void ExcluirId(uint id)
     {
       uint posicao = ReadId(id).Item1;
+
       MarcarExcluido(posicao);
     }
 
@@ -95,9 +103,9 @@ namespace Aeds3TP1
     {
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      stream.Seek(posicao, SeekOrigin.Begin);
+      stream.Seek(posicao, SeekOrigin.Begin); // ir para a posição da lápide
 
-      stream.WriteByte((byte)'*');
+      stream.WriteByte((byte)'*'); // marcar o registro como excluído
 
       stream.Close();
     }
@@ -105,6 +113,8 @@ namespace Aeds3TP1
     // retorna uma conta a partir de um offset e sua origem, lendo o registro a partir daquele offset no arquivo
     static Conta Read(long offset, SeekOrigin seekOrigin)
     {
+      // ler cara conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe
+
       #region Arquivo
 
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -247,6 +257,8 @@ namespace Aeds3TP1
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
       stream.Seek(posicao, seekOrigin);
+
+      // pegar cada conjunto de bytes de acordo com seu tipo e tamanho
 
       var idConta = Utils.ReverseBytes(BitConverter.GetBytes(id));
 
