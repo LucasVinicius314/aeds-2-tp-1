@@ -159,7 +159,7 @@ namespace Aeds3TP1
 
         Program.Write(conta);
       }
-      
+
       static void Transferencia()
       {
         Console.WriteLine("=== Realizar transferência");
@@ -174,12 +174,12 @@ namespace Aeds3TP1
 
           return;
         }
-        
+
         var idDebitar = uint.Parse(idInput1);
 
         var contaDebitar = Program.ReadId(idDebitar).Item2;
 
-        if (contaDebitar.Lapide == '*' || contaDebitar.IdConta == 0 )
+        if (contaDebitar.Lapide == '*' || contaDebitar.IdConta == 0)
         {
           Console.WriteLine("Id inválido.");
 
@@ -221,9 +221,9 @@ namespace Aeds3TP1
           return;
         }
 
-        var resultado = Program.TransferenciaConta(contaDebitar,debitar,contaCreditar);
+        var resultado = Program.TransferenciaConta(contaDebitar, debitar, contaCreditar);
 
-        if(resultado != null)
+        if (resultado != null)
           Console.WriteLine(resultado);
       }
 
@@ -241,11 +241,11 @@ namespace Aeds3TP1
 
           return;
         }
-        
+
         var id = uint.Parse(idInput);
 
         var conta = Program.ReadId(id).Item2;
-        
+
         Console.WriteLine(conta);
       }
 
@@ -268,7 +268,7 @@ namespace Aeds3TP1
 
         Program.ExcluirId(id);
       }
-      
+
       static void AtualizarRegistro()
       {
         Console.WriteLine("=== Atualizar registro");
