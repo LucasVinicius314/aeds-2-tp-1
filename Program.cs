@@ -90,7 +90,7 @@ namespace Aeds3TP1
       return newId;
     }
 
-    // marca um registro como excluído a aprtir de um id
+    // marca um registro como excluído a partir de um id
     public static void ExcluirId(uint id)
     {
       uint posicao = ReadId(id).Item1;
@@ -329,7 +329,8 @@ namespace Aeds3TP1
         Write(id, posicao, contaModificada, SeekOrigin.Begin);
       }
     }
-
+    
+    // atualiza as TransferenciasRealizadas, das contas passadas como paramentro
     public static string? TransferenciaConta(Conta contaDebitar, float debitar, Conta contaCreditar)
     {
       if (contaDebitar.SaldoConta < debitar)
