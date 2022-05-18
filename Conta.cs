@@ -74,4 +74,101 @@ namespace Aeds3TP1
     > SaldoConta ({SaldoConta.GetType()}): {SaldoConta}";
     }
   }
+  class IndiceConta
+  {
+    // getters e setters
+    public char Lapide { get; set; }
+    public byte TotalBytes { get; set; }
+    public uint IdConta { get; set; }
+    public long Posicao { get; set; }
+
+    // retorna o tamanho em bytes dos atributos do registro
+    public int GetSomaBytes()
+    {
+      return BitConverter.GetBytes(IdConta).Length +
+                       BitConverter.GetBytes(Posicao).Length + 2;
+
+    }
+
+    // override no toString padrão para melhorar a visualização do objeto
+    public override string ToString()
+    {
+      var hashCode = base.GetHashCode();
+
+      return $@"IndiceConta [{hashCode}]
+    > Lapide ({Lapide.GetType()}): {Lapide}
+    > TotalBytes ({TotalBytes.GetType()}): {TotalBytes}
+    > IdConta ({IdConta.GetType()}): {IdConta}
+    > SaldoConta ({Posicao.GetType()}): {Posicao}";
+    }
+  }
+
+  class ListaInvertida
+  {
+    // getters e setters
+    public uint TotalBytes { get; set; }
+    public string IdsContas
+    {
+      get { return idsContas; }
+      set
+      {
+        if (value == null) throw new FormatException();
+
+        idsContas = value;
+      }
+    }
+
+    public string PessoaCidade
+    {
+      get { return pessoaCidade; }
+      set
+      {
+        if (value == null) throw new FormatException();
+
+        pessoaCidade = value;
+      }
+    }
+
+    string pessoaCidade = String.Empty;
+    string idsContas = String.Empty;
+
+    // retorna o tamanho em bytes dos atributos do registro
+    public int GetSomaBytes()
+    {
+      return Encoding.Unicode.GetBytes(pessoaCidade).Length +
+      Encoding.Unicode.GetBytes(pessoaCidade).Length +
+                       BitConverter.GetBytes(TotalBytes).Length;
+
+    }
+
+    public List<uint> ListaId()
+    {
+      var listaid = new List<uint>();
+      var num = "";
+      for (int i = 0; i < idsContas.Length; i++)
+      {
+        if (idsContas[i] != ' ')
+        {
+          num += "";
+        }
+        else
+        {
+          listaid.Add((uint)Int32.Parse(num));
+          num = "";
+        }
+      }
+      return listaid;
+    }
+
+    // override no toString padrão para melhorar a visualização do objeto
+    public override string ToString()
+    {
+      var hashCode = base.GetHashCode();
+
+      return $@"ListaInvertida [{hashCode}]
+    > TotalBytes ({TotalBytes.GetType()}): {TotalBytes}
+    > IdsContas ({idsContas?.GetType()}): {idsContas ?? ""}
+    > NomePessoa ({pessoaCidade?.GetType()}): {pessoaCidade ?? ""}";
+    }
+  }
 }
