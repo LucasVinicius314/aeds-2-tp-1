@@ -176,9 +176,9 @@ namespace Aeds3TP1
 
       var idDebitar = uint.Parse(idInput1);
 
-      var contaDebitar = Program.ReadId(idDebitar).Item2;
+      var contaDebitar = Program.PesquisarConta(idDebitar);
 
-      if (contaDebitar.Lapide == '*' || contaDebitar.IdConta == 0)
+      if (contaDebitar == null)
       {
         Console.WriteLine("Id inválido.");
 
@@ -211,9 +211,9 @@ namespace Aeds3TP1
 
       var idCreditar = uint.Parse(idInput2);
 
-      var contaCreditar = Program.ReadId(idCreditar).Item2;
+      var contaCreditar = Program.PesquisarConta(idCreditar);
 
-      if (contaCreditar.Lapide == '*' || contaDebitar.IdConta == 0)
+      if (contaDebitar == null)
       {
         Console.WriteLine("Id inválido.");
 
@@ -244,7 +244,7 @@ namespace Aeds3TP1
 
       var id = uint.Parse(idInput);
 
-      var conta = Program.ReadId(id).Item2;
+      var conta = Program.PesquisarConta(id);
 
       Console.WriteLine(conta);
     }
@@ -288,12 +288,16 @@ namespace Aeds3TP1
 
       var id = uint.Parse(idInput);
 
-      var res = Program.ReadId(id);
-
-      var posicao = res.Item1;
-      var conta = res.Item2;
+      var conta = Program.PesquisarConta(id);
 
       Console.WriteLine(conta);
+
+      if (conta == null)
+      {
+        Console.WriteLine("Id inválido.");
+
+        return;
+      }
 
       while (true)
       {

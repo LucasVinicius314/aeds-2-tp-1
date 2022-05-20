@@ -77,6 +77,7 @@ namespace Aeds3TP1
   class IndiceConta
   {
     // getters e setters
+    public uint PosInd { get; set; }
     public char Lapide { get; set; }
     public byte TotalBytes { get; set; }
     public uint IdConta { get; set; }
@@ -133,31 +134,14 @@ namespace Aeds3TP1
     string idsContas = String.Empty;
 
     // retorna o tamanho em bytes dos atributos do registro
-    public int GetSomaBytes()
+    public uint GetSomaBytes()
     {
-      return Encoding.Unicode.GetBytes(pessoaCidade).Length +
+      var totalbytes = Encoding.Unicode.GetBytes(pessoaCidade).Length +
       Encoding.Unicode.GetBytes(pessoaCidade).Length +
-                       BitConverter.GetBytes(TotalBytes).Length;
+                       BitConverter.GetBytes(TotalBytes).Length + 2;
 
-    }
+      return BitConverter.ToUInt32(BitConverter.GetBytes(totalbytes));
 
-    public List<uint> ListaId()
-    {
-      var listaid = new List<uint>();
-      var num = "";
-      for (int i = 0; i < idsContas.Length; i++)
-      {
-        if (idsContas[i] != ' ')
-        {
-          num += "";
-        }
-        else
-        {
-          listaid.Add((uint)Int32.Parse(num));
-          num = "";
-        }
-      }
-      return listaid;
     }
 
     // override no toString padrão para melhorar a visualização do objeto
