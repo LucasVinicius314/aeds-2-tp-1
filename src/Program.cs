@@ -6,9 +6,11 @@ namespace Aeds3TP1
   {
     // caminho do arquivo de dados
     public static string filePath = "res/data.dat";
-    public static string filePath2 = "res/index.dat";
+    public static string indexPath = "res/index.dat";
     public static string filePessoa = "res/listainvertidapessoa.dat";
     public static string fileCidade = "res/listainvertidacidade.dat";
+    public static string tempFile1 = "res/temp1.tmp";
+    public static string tempFile2 = "res/temp2.tmp";
 
     static void Main(string[] args)
     {
@@ -17,7 +19,8 @@ namespace Aeds3TP1
       // executar o programa normalmente caso não esteja rodando como debug
 
 #if DEBUG
-      Test();
+      // Test();
+      TestOrdem();
 #else
       Menu.Principal();
 #endif
@@ -27,7 +30,7 @@ namespace Aeds3TP1
     static void Test()
     {
       LimpaArquivo(filePath);
-      LimpaArquivo(filePath2);
+      LimpaArquivo(indexPath);
       LimpaArquivo(fileCidade);
       LimpaArquivo(filePessoa);
 
@@ -90,6 +93,16 @@ namespace Aeds3TP1
       Console.WriteLine(resposta1);
 
       ExcluirId(1);
+    }
+
+    // método de teste para testar o funcionamento das operações de forma mais isolada
+    static void TestOrdem()
+    {
+      File.Delete("res/index.dat");
+
+      File.Copy("res/index1.dat", "res/index.dat");
+
+      IndiceConta.OrdenaIndice();
     }
 
     // marca um registro como excluído a partir de um id
@@ -207,7 +220,7 @@ namespace Aeds3TP1
         var conta = Conta.Read(indiceConta.Posicao);
 
         MarcarExcluido(indiceConta.Posicao, filePath);
-        MarcarExcluido(indiceConta.PosInd, filePath2);
+        MarcarExcluido(indiceConta.PosInd, indexPath);
 
         ListaInvertida.ExcluirListaInvertida(indiceConta.IdConta, conta.Cidade, fileCidade);
         ListaInvertida.ExcluirListaInvertida(indiceConta.IdConta, conta.NomePessoa, filePessoa);
@@ -260,6 +273,7 @@ namespace Aeds3TP1
       stream.Read(ultimoId, 0, ultimoId.Length);
 
       stream.Close();
+
       return BitConverter.ToUInt32(Utils.ReverseBytes(ultimoId));
     }
 
@@ -440,7 +454,7 @@ namespace Aeds3TP1
           ListaInvertida.UpdateInvertida(id, conta, contaModificada);
           var posicao = Write(0, contaModificada, SeekOrigin.End);
           indiceConta.Posicao = posicao;
-          IndiceConta.WriteIndice(indiceConta.PosInd, indiceConta, filePath2, SeekOrigin.Begin);
+          IndiceConta.WriteIndice(indiceConta.PosInd, indiceConta, indexPath, SeekOrigin.Begin);
         }
         else
         {

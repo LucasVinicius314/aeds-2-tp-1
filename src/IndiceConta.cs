@@ -29,9 +29,14 @@ namespace Aeds3TP1
     > SaldoConta ({Posicao.GetType()}): {Posicao}";
     }
 
-    public static IndiceConta ReadIndice(long offset, SeekOrigin seekOrigin, string filename)
+    public bool IsEmpty()
     {
-      // ler cara conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe
+      return this.IdConta == 0;
+    }
+
+    public static IndiceConta Read(long offset, SeekOrigin seekOrigin, string filename)
+    {
+      // ler cada conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe
       var indiceConta = new IndiceConta();
       var stream = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite);
       stream.Seek(offset, seekOrigin);
@@ -79,15 +84,16 @@ namespace Aeds3TP1
     {
       var temp = new IndiceConta();
       var tamanho = temp.GetSomaBytes();
-      var cabeca = Program.ReadCabeca(Program.filePath2);
+      var cabeca = Program.ReadCabeca(Program.indexPath);
       int inf = 0;     // limite inferior (o primeiro índice de vetor em C é zero          )
       int sup = (int)cabeca - 1; // limite superior (termina em um número a menos. 0 a 9 são 10 números)
       int meio;
+
       while (inf <= sup)
       {
         meio = (inf + sup) / 2;
         var posicao = 4 + meio * tamanho;
-        var indice = IndiceConta.ReadIndice(posicao, SeekOrigin.Begin, Program.filePath2);
+        var indice = Read(posicao, SeekOrigin.Begin, Program.indexPath);
         if (chave == indice.IdConta)
           if (indice.Lapide != '*')
             return indice;
@@ -96,6 +102,7 @@ namespace Aeds3TP1
         else
           inf = meio + 1;
       }
+
       return null;   // não encontrado
     }
 
@@ -107,7 +114,7 @@ namespace Aeds3TP1
       indiceConta.IdConta = id;
       indiceConta.Posicao = posicao;
 
-      WriteIndice(0, indiceConta, Program.filePath2, SeekOrigin.End);
+      WriteIndice(0, indiceConta, Program.indexPath, SeekOrigin.End);
       OrdenaIndice(); //fazer mais tarde
     }
 
@@ -115,30 +122,118 @@ namespace Aeds3TP1
     {
       if (seekOrigin == SeekOrigin.End)
       {
-        Program.UpdateCabeca(Program.filePath2);
+        Program.UpdateCabeca(Program.indexPath);
       }
-      var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-      stream.Seek(offset, seekOrigin);
-      stream.WriteByte((byte)indiceConta.Lapide);
-      stream.WriteByte(indiceConta.TotalBytes);
-      stream.Write(Utils.ReverseBytes(BitConverter.GetBytes(indiceConta.IdConta)));
-      stream.Write(Utils.ReverseBytes(BitConverter.GetBytes(indiceConta.Posicao)));
-      //var listaIndiceConta = ReadIndices(); pega a lista com todos, usar na busca binaria
-      // for (int i = 0; i != listaIndiceConta.Count; i++)
-      // {
-      //   stream.WriteByte(listaIndiceConta[i].TotalBytes);
-      //   stream.Write(Utils.ReverseBytes(BitConverter.GetBytes(listaIndiceConta[i].IdConta)));
-      //   stream.Write(Utils.ReverseBytes(BitConverter.GetBytes(listaIndiceConta[i].Posicao)));
 
-      // }
+      var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+      stream.Seek(offset, seekOrigin);
+      indiceConta.WriteToStream(stream);
+
       stream.Close();
+    }
+
+    public void WriteToStream(FileStream fs)
+    {
+      fs.WriteByte((byte)this.Lapide);
+      fs.WriteByte(this.TotalBytes);
+      fs.Write(Utils.ReverseBytes(BitConverter.GetBytes(this.IdConta)));
+      fs.Write(Utils.ReverseBytes(BitConverter.GetBytes(this.Posicao)));
     }
 
     public static void OrdenaIndice()
     {
-      "".ToString();
+      var quantidadeRegistros = Program.ReadCabeca(Program.indexPath);
 
+      var halfQuantidade = Math.Floor((double)quantidadeRegistros / 2);
 
+      var enumerator = new IndiceContaEnumerator();
+
+      var stream1 = new FileStream(Program.tempFile1, FileMode.Create, FileAccess.ReadWrite);
+      var stream2 = new FileStream(Program.tempFile2, FileMode.Create, FileAccess.ReadWrite);
+
+      for (int i = 0; i < halfQuantidade; i++)
+      {
+        var list = new List<IndiceConta>();
+
+        var one = enumerator.Next();
+
+        var two = enumerator.Next();
+
+        if (one == null && two == null)
+        {
+          break;
+        }
+
+        if (one == null)
+        {
+          list.Add(two!);
+        }
+        else if (two == null)
+        {
+          list.Add(one);
+        }
+        else
+        {
+          if (one.IdConta < two.IdConta)
+          {
+            list.Add(one);
+            list.Add(two);
+          }
+          else
+          {
+            list.Add(two);
+            list.Add(one);
+          }
+        }
+
+        foreach (var contaIndex in list)
+        {
+          if (i % 2 == 0)
+          {
+            contaIndex.WriteToStream(stream1);
+          }
+          else
+          {
+            contaIndex.WriteToStream(stream2);
+          }
+        }
+      }
+
+      stream1.Close();
+      stream2.Close();
+
+      enumerator.ToString();
+    }
+  }
+
+  class IndiceContaEnumerator
+  {
+    int curIndex = 4;
+
+    public IndiceConta? Next()
+    {
+      var read = IndiceConta.Read(curIndex, SeekOrigin.Begin, Program.indexPath);
+
+      if (read.IsEmpty())
+      {
+        return null;
+      }
+
+      curIndex += read.TotalBytes;
+
+      return read;
+    }
+
+    public void Reset()
+    {
+      curIndex = 4;
     }
   }
 }
+
+
+// 1 byte => lápide
+// 1 byte => total bytes
+// 4 byte => id
+// 8 byte => posição no arquivo
