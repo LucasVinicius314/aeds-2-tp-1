@@ -114,7 +114,7 @@ namespace Aeds3TP1
       indeceConta.Posicao = posicao;
 
       WriteIndice(0, indeceConta, filePath2, SeekOrigin.End);
-      //OrdenaIndice();//fazer mais tarde
+      OrdenaIndice();//fazer mais tarde
     }
 
     public static void Write(Conta conta)
@@ -901,184 +901,11 @@ namespace Aeds3TP1
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////// EXTRAS ///////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    static void Ordena(string arq1, string arq2, int contador)
+
+    static void OrdenaIndice()
     {
-      var arqname = "arq4.dat";
-      var arqname2 = "arq3.dat";
-      LimpaArquivo(arqname);
-      LimpaArquivo(arqname2);
-      var position1 = 0;
-      var position2 = 0;
-      var trocar = false;
-      var conta1 = ReadIndice(position1, SeekOrigin.Begin, arq1);
-      var conta2 = ReadIndice(position2, SeekOrigin.Begin, arq2);
-      var salvaid = conta1.IdConta;
-      var salvaid2 = conta2.IdConta;
 
-      for (int i = 0; i < contador; i++)
-      {
-        if (trocar == false)
-        {
-          if (salvaid > conta1.IdConta)
-          {
-
-          }
-          switch (ComparaConta(conta1, conta2, arqname))
-          {
-            case -1:
-              position2 += conta2.TotalBytes;
-              conta2 = ReadIndice(position2, SeekOrigin.Begin, arq2);
-              break;
-            case 0:
-              position1 += conta1.TotalBytes;
-              conta1 = ReadIndice(position1, SeekOrigin.Begin, arq1);
-              break;
-            case 1:
-
-              break;
-            case 2:
-              WriteIndice(0, conta1, arqname, SeekOrigin.End);
-              break;
-            default:
-              break;
-          }
-
-          switch (ComparaConta(conta1, conta2, arqname2))
-          {
-            case -1:
-              position2 += conta2.TotalBytes;
-              conta2 = ReadIndice(position2, SeekOrigin.Begin, arq2);
-              break;
-            case 0:
-              position1 += conta1.TotalBytes;
-              conta1 = ReadIndice(position1, SeekOrigin.Begin, arq1);
-              break;
-            case 1:
-
-              break;
-            case 2:
-              WriteIndice(0, conta1, arqname, SeekOrigin.End);
-              break;
-            default:
-              break;
-          }
-        }
-
-      }
     }
-
-    static int ComparaConta(IndiceConta conta1, IndiceConta conta2, string arqname)
-    {
-      // 0 = sem problema, o id da conta 1 é 0, o ida da conta 2 é 0
-      if (conta1.IdConta != 0)
-      {
-        if (conta2.IdConta != 0)
-        {
-          if (conta1.IdConta < conta2.IdConta)
-          {
-            WriteIndice(0, conta1, arqname, SeekOrigin.End);
-            return 0;
-          }
-          else
-          {
-            WriteIndice(0, conta2, arqname, SeekOrigin.End);
-            return -1;
-          }
-        }
-        return 2;
-
-      }
-
-      return 1;
-    }
-
-    // static void OrdenaIndice()
-    // {
-    //   var position = 0;
-    //   var cloneposition = 0;
-    //   var contador = 0;
-    //   var conta1 = ReadIndice(position, SeekOrigin.Begin, filePath2);
-    //   IndiceConta conta2 = new IndiceConta();
-
-    //   bool arq = false;
-    //   var stream1 = "arq1.dat";
-    //   var stream2 = "arq2.dat";
-    //   LimpaArquivo(stream1);
-    //   LimpaArquivo(stream2);
-
-    //   while (conta1.IdConta != 0) // ver se a posição existe
-    //   {
-    //     if (conta1.Lapide == '\0')
-    //     {
-    //       cloneposition = position + conta1.TotalBytes;
-    //       conta2 = ReadIndice(cloneposition, SeekOrigin.Begin, filePath2);
-    //       if (conta2.IdConta == 0)
-    //       {
-    //         if (!arq)
-    //         {
-    //           WriteIndice(conta1, stream1);
-    //         }
-    //         else
-    //         {
-    //           WriteIndice(conta1, stream2);
-    //         }
-    //         contador++;
-    //       }
-    //       while (conta2.IdConta != 0)
-    //       { // ver se a posição existe
-    //         if (conta2.Lapide == '\0')
-    //         {
-    //           if (conta1.IdConta < conta2.IdConta)
-    //           {
-    //             if (!arq)
-    //             {
-    //               WriteIndice(conta1, stream1);
-    //               WriteIndice(conta2, stream1);
-    //               arq = !arq;
-    //             }
-    //             else
-    //             {
-    //               WriteIndice(conta1, stream2);
-    //               WriteIndice(conta2, stream2);
-    //               arq = !arq;
-    //             }
-    //           }
-    //           else
-    //           {
-    //             if (!arq)
-    //             {
-    //               WriteIndice(conta2, stream1);
-    //               WriteIndice(conta1, stream1);
-    //               arq = !arq;
-    //             }
-    //             else
-    //             {
-    //               WriteIndice(conta2, stream2);
-    //               WriteIndice(conta1, stream2);
-    //               arq = !arq;
-    //             }
-    //           }
-    //           position = cloneposition + conta2.TotalBytes;
-    //           contador += 2;
-    //           if (contador == 10)
-    //           {
-    //             goto Finaliza;
-    //           }
-    //           goto Pular;
-    //         }
-    //         cloneposition += conta2.TotalBytes;
-
-    //         conta2 = ReadIndice((long)cloneposition, SeekOrigin.Begin, filePath2);
-    //       }
-    //     }
-
-    //     position += conta1.TotalBytes; // usa o tamanho junto ao offset atual pra ir para a posição do próximo registro
-    //   Pular:
-    //     conta1 = ReadIndice((long)position, SeekOrigin.Begin, filePath2);
-    //   }
-    // Finaliza:
-    //   Ordena(stream1, stream2, contador);
-    // }
 
 
     static List<string> ExtrairPalavra(string palavras)
