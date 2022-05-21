@@ -176,7 +176,7 @@ namespace Aeds3TP1
 
       var idDebitar = uint.Parse(idInput1);
 
-      var contaDebitar = Program.PesquisarConta(idDebitar);
+      var contaDebitar = Conta.PesquisarConta(idDebitar);
 
       if (contaDebitar == null)
       {
@@ -211,7 +211,7 @@ namespace Aeds3TP1
 
       var idCreditar = uint.Parse(idInput2);
 
-      var contaCreditar = Program.PesquisarConta(idCreditar);
+      var contaCreditar = Conta.PesquisarConta(idCreditar);
 
       if (contaDebitar == null)
       {
@@ -244,7 +244,7 @@ namespace Aeds3TP1
 
       var id = uint.Parse(idInput);
 
-      var conta = Program.PesquisarConta(id);
+      var conta = Conta.PesquisarConta(id);
 
       Console.WriteLine(conta);
     }
@@ -288,7 +288,7 @@ namespace Aeds3TP1
 
       var id = uint.Parse(idInput);
 
-      var conta = Program.PesquisarConta(id);
+      var conta = Conta.PesquisarConta(id);
 
       Console.WriteLine(conta);
 
