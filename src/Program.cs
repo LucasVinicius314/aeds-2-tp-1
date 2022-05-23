@@ -11,6 +11,8 @@ namespace Aeds3TP1
     public static string fileCidade = "res/listainvertidacidade.dat";
     public static string tempFile1 = "res/temp1.tmp";
     public static string tempFile2 = "res/temp2.tmp";
+    public static string tempFile3 = "res/temp3.tmp";
+    public static string tempFile4 = "res/temp4.tmp";
 
     static void Main(string[] args)
     {
