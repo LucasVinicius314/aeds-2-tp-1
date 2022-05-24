@@ -56,10 +56,17 @@ namespace Aeds3TP1
     //Excluir cidade e pessoa, para depois escrever novamente com as modificações
     public static void UpdateInvertida(uint id, Conta conta, Conta contaModificada)
     {
-      ExcluirListaInvertida(id, conta.Cidade, Program.fileCidade);
-      ExcluirListaInvertida(id, conta.NomePessoa, Program.filePessoa);
-      WriteListaInvertidaCidade(contaModificada);
-      WriteListaInvertidaPessoa(contaModificada);
+      if (conta.NomePessoa != contaModificada.NomePessoa)
+      {
+        ExcluirListaInvertida(id, conta.NomePessoa, Program.filePessoa);
+        WriteListaInvertidaPessoa(contaModificada);
+      }
+
+      if (conta.Cidade != contaModificada.Cidade)
+      {
+        ExcluirListaInvertida(id, conta.Cidade, Program.fileCidade);
+        WriteListaInvertidaCidade(contaModificada);
+      }
     }
 
     //Remove os ids, e caso necessario a palavra sem ids remanescentes
