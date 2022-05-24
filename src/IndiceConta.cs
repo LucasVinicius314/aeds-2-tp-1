@@ -33,7 +33,7 @@ namespace Aeds3TP1
     {
       return this.IdConta == 0;
     }
-
+    //Le um IndiceConta no arquivo com o offset desejado, sua origem e no arquivo passado como parametro
     public static IndiceConta Read(long offset, SeekOrigin seekOrigin, string filename)
     {
       // ler cada conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe
@@ -80,6 +80,7 @@ namespace Aeds3TP1
       return indiceConta;
     }
 
+    //Retorna um IndiceConta por meio de pesquisa binaria pelo id
     public static IndiceConta? ReadIdPesquisaBinaria(uint chave)
     {
       var temp = new IndiceConta();
@@ -106,6 +107,7 @@ namespace Aeds3TP1
       return null;   // não encontrado
     }
 
+    //Copia todos os atributos necessarios da conta e cria um novo indice
     public static void CriarIndice(uint id, Conta conta, long posicao)
     {
       var indiceConta = new IndiceConta();
@@ -115,9 +117,10 @@ namespace Aeds3TP1
       indiceConta.Posicao = posicao;
 
       WriteIndice(0, indiceConta, Program.indexPath, SeekOrigin.End);
-      OrdenaIndice(); //fazer mais tarde
+      OrdenaIndice();
     }
 
+    //Escreve um indice no arquivo com o offset desejado, sua origem e no arquivo passado como parametro
     public static void WriteIndice(uint offset, IndiceConta indiceConta, string file, SeekOrigin seekOrigin)
     {
       if (seekOrigin == SeekOrigin.End)

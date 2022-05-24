@@ -11,6 +11,7 @@ namespace Aeds3TP1
       return bytes;
     }
 
+    //Transforma uma lista de ids uint em uma String
     public static String IdsToString(List<uint> ids)
     {
       var listaId = String.Empty;
@@ -30,6 +31,7 @@ namespace Aeds3TP1
       return listaId;
     }
 
+    //Retorna umas lista com todos os ids da string
     public static List<uint> ExtrairIds(string palavras)
     {
       var num = String.Empty;
@@ -61,6 +63,7 @@ namespace Aeds3TP1
       return listaid;
     }
 
+    //Pega todoas as palavras de uma mesma string, e retorna uma lista com todas as palavras separadas
     public static List<string> ExtrairPalavra(string palavras)
     {
       var palavra = String.Empty;
