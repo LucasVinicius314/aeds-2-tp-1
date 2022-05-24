@@ -23,9 +23,83 @@ namespace Aeds3TP1
 #if DEBUG
       //Test();
       TestOrdem();
+      // InsertTest();
 #else
       Menu.Principal();
 #endif
+    }
+
+    static void InsertTest()
+    {
+      Write(new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "890890890",
+        IdConta = 32,
+        Lapide = '\0',
+        NomePessoa = "marcelo pedro",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      });
+      Write(new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "890890890",
+        IdConta = 64,
+        Lapide = '\0',
+        NomePessoa = "marcelo pedro",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      });
+      Write(new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "890890890",
+        IdConta = 68,
+        Lapide = '\0',
+        NomePessoa = "marcelo pedro",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      });
+
+      "".ToString();
+
+      // Write(new Conta
+      // {
+      //   Cidade = "sergipe",
+      //   Cpf = "890890890",
+      //   IdConta = 9,
+      //   Lapide = '\0',
+      //   NomePessoa = "marcelo pedro",
+      //   SaldoConta = 4000,
+      //   TotalBytes = 0,
+      //   TransferenciasRealizadas = 0,
+      // });
+      // Write(new Conta
+      // {
+      //   Cidade = "sergipe",
+      //   Cpf = "890890890",
+      //   IdConta = 2,
+      //   Lapide = '\0',
+      //   NomePessoa = "marcelo pedro",
+      //   SaldoConta = 4000,
+      //   TotalBytes = 0,
+      //   TransferenciasRealizadas = 0,
+      // });
+      // Write(new Conta
+      // {
+      //   Cidade = "sergipe",
+      //   Cpf = "890890890",
+      //   IdConta = 3,
+      //   Lapide = '\0',
+      //   NomePessoa = "marcelo pedro",
+      //   SaldoConta = 4000,
+      //   TotalBytes = 0,
+      //   TransferenciasRealizadas = 0,
+      // });
     }
 
     // método de teste para testar o funcionamento das operações de forma mais isolada
@@ -100,9 +174,9 @@ namespace Aeds3TP1
     // método de teste para testar o funcionamento das operações de forma mais isolada
     static void TestOrdem()
     {
-      File.Delete("res/index.dat");
+      // File.Delete("res/index.dat");
 
-      File.Copy("res/index1.dat", "res/index.dat");
+      // File.Copy("res/index1.dat", "res/index.dat");
 
       IndiceConta.OrdenaIndice();
     }

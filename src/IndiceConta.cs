@@ -155,7 +155,7 @@ namespace Aeds3TP1
       var stream1 = new FileStream(Program.tempFile1, FileMode.Create, FileAccess.ReadWrite);
       var stream2 = new FileStream(Program.tempFile2, FileMode.Create, FileAccess.ReadWrite);
 
-      for (int i = 0; i < halfQuantidade; i++)
+      for (int i = 0; i <= halfQuantidade; i++)
       {
         var list = new List<IndiceConta>();
 
@@ -211,10 +211,37 @@ namespace Aeds3TP1
       OutputFileTemp1();
       OutputFileTemp2();
 
+      OrdenaInterno();
+
+      var temp3 = new IndiceContaEnumerator() { curIndex = 0, filePath = Program.tempFile3 }.AsList();
+
+      var finalStream = new FileStream(Program.indexPath, FileMode.Create, FileAccess.ReadWrite);
+
+      finalStream.Write(Utils.ReverseBytes(BitConverter.GetBytes(temp3.Count)));
+
+      foreach (var item in temp3)
+      {
+        if (item.Lapide != '*')
+        {
+          item.WriteToStream(finalStream);
+        }
+      }
+
+      finalStream.Close();
+    }
+
+    static void OrdenaInterno()
+    {
       var index = -1;
 
       var lastPos1 = 0;
       var lastPos2 = 0;
+
+      var lock1 = false;
+      var lock2 = false;
+
+      File.Delete(Program.tempFile3);
+      File.Delete(Program.tempFile4);
 
       while (true)
       {
@@ -228,10 +255,17 @@ namespace Aeds3TP1
 
         while (true)
         {
+          if (lock1)
+          {
+            break;
+          }
+
           var read = tempReadStream1.Next();
 
           if (read == null)
           {
+            lock1 = true;
+
             break;
           }
 
@@ -258,10 +292,17 @@ namespace Aeds3TP1
 
         while (true)
         {
+          if (lock2)
+          {
+            break;
+          }
+
           var read = tempReadStream2.Next();
 
           if (read == null)
           {
+            lock2 = true;
+
             break;
           }
 
@@ -301,12 +342,7 @@ namespace Aeds3TP1
           }
         });
 
-        if (newList.Count == 0)
-        {
-          "".ToString();
-        }
-
-        var writeStream = new FileStream(/* Program.tempFile3 */ index % 2 == 0 ? Program.tempFile3 : Program.tempFile4, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+        var writeStream = new FileStream(index % 2 == 0 ? Program.tempFile3 : Program.tempFile4, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
         writeStream.Seek(0, SeekOrigin.End);
 
@@ -318,264 +354,38 @@ namespace Aeds3TP1
         writeStream.Close();
 
         "".ToString();
+
+        if (lock1 && lock2)
+        {
+          goto main;
+        }
       }
 
-      #region New try
-
-      // OutputFileTemp1();
-      // OutputFileTemp2();
-
-      // var tempReadStream1 = new IndiceContaEnumerator() { filePath = Program.tempFile1, curIndex = 0 };
-
-      // var tempList1 = new List<IndiceConta>();
-
-      // uint? last1 = null;
-
-      // var lastPos1 = 0;
-
-      // while (true)
-      // {
-      //   var read = tempReadStream1.Next();
-
-      //   if (read == null)
-      //   {
-      //     return;
-      //   }
-
-      //   if (last1 != null)
-      //   {
-      //     if (last1 > read.IdConta)
-      //     {
-      //       lastPos1 = tempReadStream1.curIndex;
-
-      //       break;
-      //     }
-      //   }
-
-      //   last1 = read.IdConta;
-
-      //   tempList1.Add(read);
-      // }
-
-      // var tempReadStream2 = new IndiceContaEnumerator() { filePath = Program.tempFile2, curIndex = 0 };
-
-      // var tempList2 = new List<IndiceConta>();
-
-      // uint? last2 = null;
-
-      // var lastPos2 = 0;
-
-      // while (true)
-      // {
-      //   var read = tempReadStream2.Next();
-
-      //   if (read == null)
-      //   {
-      //     return;
-      //   }
-
-      //   if (last2 != null)
-      //   {
-      //     if (last2 > read.IdConta)
-      //     {
-      //       lastPos2 = tempReadStream2.curIndex;
-
-      //       break;
-      //     }
-      //   }
-
-      //   last2 = read.IdConta;
-
-      //   tempList2.Add(read);
-      // }
-
-      // var newList = new List<IndiceConta>();
-
-      // newList.AddRange(tempList1);
-      // newList.AddRange(tempList2);
-
-      // newList.Sort((a, b) =>
-      // {
-      //   if (a.IdConta == b.IdConta)
-      //   {
-      //     return 0;
-      //   }
-      //   else if (a.IdConta > b.IdConta)
-      //   {
-      //     return 1;
-      //   }
-      //   else
-      //   {
-      //     return -1;
-      //   }
-      // });
-
-      // var stream3 = new FileStream(Program.tempFile3, FileMode.Create, FileAccess.ReadWrite);
-
-      // foreach (var item in newList)
-      // {
-      //   item.WriteToStream(stream3);
-      // }
-
-      // stream3.Close();
-
-      // "".ToString();
-
-      #endregion
-
-      #region Old try
-
-      // var tempReadStream1 = new IndiceContaEnumerator() { filePath = Program.tempFile1, curIndex = 0 };
-      // var tempReadStream2 = new IndiceContaEnumerator() { filePath = Program.tempFile2, curIndex = 0 };
-
-      // var skipCount = 0;
-
-      // var stream3 = new FileStream(Program.tempFile3, FileMode.Create, FileAccess.ReadWrite);
-
-      // Console.WriteLine("=====================");
-
-      // IndiceConta? lastA = null;
-      // IndiceConta? lastB = null;
-
-      // var shouldReadA = true;
-      // var shouldReadB = true;
-
-      // OutputFileTemp1();
-      // OutputFileTemp2();
-
-      // var written = new List<uint>();
-
-      // Console.WriteLine("=====================");
-
-      // while (true)
-      // {
-      //   Console.WriteLine("=====================    NEW ITERATION");
-
-      //   var shouldReadASession = shouldReadA;
-      //   var shouldReadBSession = shouldReadB;
-
-      //   var newA = shouldReadA ? tempReadStream1.Next() : null;
-      //   var newB = shouldReadB ? tempReadStream2.Next() : null;
-
-      //   if (shouldReadA)
-      //   {
-      //     Console.WriteLine("should read A. getting next from temp 1");
-      //     Console.WriteLine("newA:");
-      //     Console.WriteLine(newA?.IdConta);
-      //     Console.WriteLine("\n");
-
-      //     shouldReadA = false;
-      //   }
-
-      //   if (shouldReadB)
-      //   {
-      //     Console.WriteLine("should read B. getting next from temp 2");
-      //     Console.WriteLine("newB:");
-      //     Console.WriteLine(newB?.IdConta);
-      //     Console.WriteLine("\n");
-
-      //     shouldReadB = false;
-      //   }
-
-      //   if (newA != null && lastA != null)
-      //   {
-      //     Console.WriteLine($"    is {newA?.IdConta} < {lastA?.IdConta} ?");
-      //     Console.WriteLine("    \n");
-
-      //     if (newA?.IdConta < lastA?.IdConta)
-      //     {
-      //       Console.WriteLine("    yes");
-
-      //       "".ToString();
-      //     }
-      //   }
-
-      //   if (newB != null && lastB != null)
-      //   {
-      //     Console.WriteLine($"    is {newB?.IdConta} < {lastB?.IdConta} ?");
-      //     Console.WriteLine("    \n");
-
-      //     if (newB?.IdConta < lastB?.IdConta)
-      //     {
-      //       Console.WriteLine("    yes");
-
-      //       "".ToString();
-
-      //       shou
-      //     }
-      //   }
-
-      //   if (newA == null && newB == null)
-      //   {
-      //     break;
-      //   }
-
-      //   var currentA = newA ?? lastA;
-      //   var currentB = newB ?? lastB;
-
-      //   if (currentA == null)
-      //   {
-      //   }
-      //   else if (currentB == null)
-      //   {
-      //   }
-      //   else
-      //   {
-      //     if (currentA.IdConta > currentB.IdConta)
-      //     {
-      //       currentB.WriteToStream(stream3);
-
-      //       Console.WriteLine("=========== writing b");
-      //       Console.WriteLine(currentB?.IdConta);
-      //       Console.WriteLine("\n");
-
-      //       written.Add(currentB?.IdConta ?? 0);
-
-      //       shouldReadB = true;
-      //     }
-      //     else
-      //     {
-      //       currentA.WriteToStream(stream3);
-
-      //       Console.WriteLine("=========== writing a");
-      //       Console.WriteLine(currentA?.IdConta);
-      //       Console.WriteLine("\n");
-
-      //       written.Add(currentA?.IdConta ?? 0);
-
-      //       shouldReadA = true;
-      //     }
-      //   }
-
-
-      //   if (newA == null || newB == null)
-      //   {
-      //     "warning".ToString();
-      //   }
-
-
-      //   if (shouldReadASession)
-      //   {
-      //     lastA = newA;
-      //   }
-
-      //   if (shouldReadBSession)
-      //   {
-      //     lastB = newB;
-      //   }
-
-      //   // Console.WriteLine("a");
-      //   // Console.WriteLine(a?.IdConta);
-
-      //   // Console.WriteLine("b");
-      //   // Console.WriteLine(b?.IdConta);
-
-      //   // Console.WriteLine("\n");
-      // }
-
-      // stream3.Close();
-
-      #endregion
+    main:
+
+      File.Delete(Program.tempFile1);
+      File.Delete(Program.tempFile2);
+
+      try
+      {
+        File.Copy(Program.tempFile3, Program.tempFile1);
+      }
+      catch (System.Exception)
+      {
+      }
+
+      try
+      {
+        File.Copy(Program.tempFile4, Program.tempFile2);
+      }
+      catch (System.Exception)
+      {
+      }
+
+      if (index != 0)
+      {
+        OrdenaInterno();
+      }
     }
 
     static void OutputFileTemp1()
@@ -622,6 +432,29 @@ namespace Aeds3TP1
     public string filePath = String.Empty;
     public int curIndex = 4;
 
+    public List<IndiceConta> AsList()
+    {
+      var oldIndex = curIndex;
+
+      var list = new List<IndiceConta>();
+
+      while (true)
+      {
+        var read = Next();
+
+        if (read == null)
+        {
+          break;
+        }
+
+        list.Add(read);
+      }
+
+      curIndex = oldIndex;
+
+      return list;
+    }
+
     public IndiceConta? Next()
     {
       var read = IndiceConta.Read(curIndex, SeekOrigin.Begin, filePath);
@@ -632,10 +465,6 @@ namespace Aeds3TP1
       }
 
       curIndex += read.TotalBytes;
-
-      // Console.WriteLine(">>> ");
-      // Console.WriteLine(read?.IdConta);
-      // Console.WriteLine("\n");
 
       return read;
     }
