@@ -13,10 +13,11 @@ namespace Aeds3TP1
           Console.WriteLine(@"Listagem de operações:
   0 - Criar conta bancária
   1 - Realizar transferência
-  2 - Ler registro
-  3 - Atualizar registro
-  4 - Deletar registro
-  5 - Sair");
+  2 - Ler registro por id
+  3 - Ler registro por cidade ou por nome
+  4 - Atualizar registro
+  5 - Deletar registro
+  6 - Sair");
 
           var input = Console.ReadLine(); // input do usuário
 
@@ -39,20 +40,25 @@ namespace Aeds3TP1
 
             case "2":
               // Ler registro
-              LerRegistro();
+              LerRegistroId();
               break;
 
             case "3":
+              // Ler registro
+              LerRegistroId();
+              break;
+
+            case "4":
               // Atualizar registro
               AtualizarRegistro();
               break;
 
-            case "4":
+            case "5":
               // Deletar registro
               ExcluirRegistro();
               break;
 
-            case "5":
+            case "6":
               // Sair
               return;
 
@@ -213,7 +219,7 @@ namespace Aeds3TP1
 
       var contaCreditar = Conta.PesquisarConta(idCreditar);
 
-      if (contaDebitar == null)
+      if (contaCreditar == null)
       {
         Console.WriteLine("Id inválido.");
 
@@ -227,7 +233,7 @@ namespace Aeds3TP1
     }
 
     // método responsável pelo controle do menu de leitura de registro
-    static void LerRegistro()
+    static void LerRegistroId()
     {
       Console.WriteLine("=== Ler registro");
 
@@ -247,6 +253,63 @@ namespace Aeds3TP1
       var conta = Conta.PesquisarConta(id);
 
       Console.WriteLine(conta);
+    }
+
+    static void LerRegistroPessoaCidade()
+    {
+      Console.WriteLine("=== Ler registro");
+
+      Console.WriteLine("Digite 1 ou 2 (1 - Nome, 2 - Cidade):");
+
+      var num = Console.ReadLine(); // input do usuário
+
+      if (num == null)
+      {
+        Console.WriteLine("Numero inválido.");
+
+        return;
+      }
+
+      var opcao = uint.Parse(num);
+
+      if (opcao != 1 && opcao != 2)
+      {
+        Console.WriteLine("Numero inválido.");
+
+        return;
+      }
+
+      var pessoacidade = Console.ReadLine();
+
+      if (pessoacidade == null)
+      {
+        Console.WriteLine("Palavra inválida.");
+
+        return;
+      }
+
+      var resposta = new List<Conta>();
+
+      if (opcao == 1)
+      {
+        resposta = Program.PesquisarPessoa(pessoacidade);
+      }
+      else
+      {
+        resposta = Program.PesquisarCidade(pessoacidade);
+      }
+      if (resposta != null)
+      {
+        for (int i = 0; i < resposta.Count; i++)
+        {
+          Console.WriteLine(resposta[i]);
+        }
+      }
+      else
+      {
+        Console.WriteLine("Não houve resultados para a pesquisa.");
+      }
+
     }
 
     // método responsável pelo controle do menu de exclusão de registro

@@ -53,6 +53,7 @@ namespace Aeds3TP1
     > NomePessoa ({pessoaCidade?.GetType()}): {pessoaCidade ?? ""}";
     }
 
+    //Excluir cidade e pessoa, para depois escrever novamente com as modificações
     public static void UpdateInvertida(uint id, Conta conta, Conta contaModificada)
     {
       ExcluirListaInvertida(id, conta.Cidade, Program.fileCidade);
@@ -61,11 +62,9 @@ namespace Aeds3TP1
       WriteListaInvertidaPessoa(contaModificada);
     }
 
+    //Remove os ids, e caso necessario a palavra sem ids remanescentes
     public static void ExcluirListaInvertida(uint id, string pessoacidade, string file)
     {
-      // var listapessoa = ReadListaInvertida(filepessoa);
-      // var listacidade = ReadListaInvertida(filecidade);
-      // PesquisarPalavra();
       var listapesquisar = ReadListaInvertida(file);
       var listapalavras = Utils.ExtrairPalavra(pessoacidade);
 
@@ -76,7 +75,7 @@ namespace Aeds3TP1
           if (listapesquisar[i].PessoaCidade == listapalavras[j])
           {
             var idremovido = Program.PesquisarIdExcluir(Utils.ExtrairIds(listapesquisar[i].IdsContas), id);
-            if (idremovido.Count > 0)
+            if (idremovido.Count > 0)//com ids remanescentes 
             {
               listapesquisar[i].IdsContas = Utils.IdsToString(idremovido);
             }
@@ -84,8 +83,6 @@ namespace Aeds3TP1
             {
               listapesquisar.RemoveAt(i);
             }
-            // listapesquisar[i].IdsContas += " " + ininv.IdsContas;
-            // break;
           }
         }
       }
@@ -93,6 +90,7 @@ namespace Aeds3TP1
       Program.ResetarArquivo(listapesquisar, file);
     }
 
+    //Escreve no arquivo TODAS as ListasInvertidas passadas como parametro
     public static void WriteListaInvertida(string file, List<ListaInvertida> listainserir)
     {
       var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -122,16 +120,19 @@ namespace Aeds3TP1
       stream.Close();
     }
 
+    //Coloca no arquivo de listainvertidapessoa os novos nomes da pessoa
     public static void WriteListaInvertidaPessoa(Conta conta)
     {
       WriteListaInvertida(Program.filePessoa, InserirListaInvertida(conta.IdConta, conta.NomePessoa, Program.filePessoa));
     }
 
+    //Coloca no arquivo de listainvertidacidade os novos nomes da cidade
     public static void WriteListaInvertidaCidade(Conta conta)
     {
       WriteListaInvertida(Program.fileCidade, InserirListaInvertida(conta.IdConta, conta.Cidade, Program.fileCidade));
     }
 
+    //Retorna uma ListaInvertida com o novo pessoa ou cidade inserida
     static List<ListaInvertida> InserirListaInvertida(uint id, string pessoacidade, string file)
     {
       //mecher nos parametros mais tarde, inv n faz sentido
@@ -150,11 +151,13 @@ namespace Aeds3TP1
 
         for (int i = 0; i < tamanhopesquisa; i++)
         {
+          //ja tem uma pessoa ou cidade com esse nome
           if (listapesquisar[i].PessoaCidade == listapalavras[j])
           {
             listapesquisar[i].IdsContas += " " + ininv.IdsContas;
             break;
           }
+          //se chegar ao final é necessario inserir a nova palavra 
           if (i == tamanhopesquisa - 1)
           {
             listapesquisar.Add(ininv);
@@ -162,6 +165,7 @@ namespace Aeds3TP1
             break;
           }
         }
+        //se não houver nenhuma pessoa ou cidade inserida
         if (tamanhopesquisa == 0)
         {
           listapesquisar.Add(ininv);
@@ -172,13 +176,14 @@ namespace Aeds3TP1
       return listapesquisar;
     }
 
+    //Faz a leitura de todo o arquivo passado como parametro, e retornando todas as ListasInvertidas(pessoas ou cidades)
     public static List<ListaInvertida> ReadListaInvertida(string file)
     {
       var listainv = new List<ListaInvertida>();
 
       var posicao = 4;
 
-      var quantregistro = Program.QuantidadeRegistros(file);
+      var quantregistro = Program.ReadCabeca(file);
 
       var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 

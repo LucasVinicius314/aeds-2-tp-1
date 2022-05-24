@@ -21,7 +21,7 @@ namespace Aeds3TP1
       // executar o programa normalmente caso não esteja rodando como debug
 
 #if DEBUG
-      // Test();
+      //Test();
       TestOrdem();
 #else
       Menu.Principal();
@@ -80,12 +80,12 @@ namespace Aeds3TP1
       var obj2 = Conta.PesquisarConta(1);
       Console.WriteLine(obj2);
 
-      var resposta = PesquisarPalavra("sergipe", fileCidade);
+      var resposta = PesquisarCidade("sergipe");
       Console.WriteLine(resposta);
 
-      resposta = PesquisarPalavra("joao", filePessoa);
+      resposta = PesquisarPessoa("joao");
       Console.WriteLine(resposta);
-      resposta = PesquisarPalavra("joaa", filePessoa);
+      resposta = PesquisarPessoa("joaa");
       Console.WriteLine(resposta);
 
       var resposta1 = IndiceConta.ReadIdPesquisaBinaria((uint)1);
@@ -119,6 +119,7 @@ namespace Aeds3TP1
     //////////////////////////////////////////////////Create///////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //Cria uma nova conta, juntamente com a seu indice e lista invertida de pessoa/cidade; 
     public static void Write(Conta conta)
     {
       var id = UpdateCabeca(filePath);
@@ -141,18 +142,19 @@ namespace Aeds3TP1
     //////////////////////////////////////////////////WRITE///////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //Escreve na posicao inicial do arquivo um uint passado como parametro
     static void WriteCabeca(uint cabeca, string file)
     {
       var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      var newIdBytes = Utils.ReverseBytes(BitConverter.GetBytes(cabeca));
+      var newBytes = Utils.ReverseBytes(BitConverter.GetBytes(cabeca));
 
-      stream.Write(newIdBytes); // escreve o id incrementado
+      stream.Write(newBytes); // escreve o id incrementado
 
       stream.Close();
     }
 
-    // escreve um novo registro a partir de um id, a conta, o offset desejado e sua origem
+    // Escreve uma nova conta no arquivo com o offset desejado e sua origem
     static long Write(long posicao, Conta conta, SeekOrigin seekOrigin)
     {
       var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -212,7 +214,7 @@ namespace Aeds3TP1
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////EXCLUIR/////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    //Exclui tudo relacionado a um id, tanto na lista invertida, como no indice e no arquivo principal data.dat
     public static void ExcluirId(uint id)
     {
       var indiceConta = IndiceConta.ReadIdPesquisaBinaria(id);
@@ -229,7 +231,8 @@ namespace Aeds3TP1
       }
     }
 
-
+    //Limpa um arquivo, escreve uma lista de ListaInvertidas(com pessoa ou cidade) e atualiza a 
+    //quantidade de registros no arquivo, passado como parametro
     public static void ResetarArquivo(List<ListaInvertida> listatudo, string file)
     {
       // var quantregistro = QuantidadeRegistros(file) - 1;
@@ -251,6 +254,7 @@ namespace Aeds3TP1
       stream.Close();
     }
 
+    //Cria um arquivo novo, por cima do arquivo passado como parametro, limpado o arquivo
     static void LimpaArquivo(string file)
     {
       var stream = new FileStream(file, FileMode.Create, FileAccess.ReadWrite);
@@ -266,34 +270,18 @@ namespace Aeds3TP1
     //////////////////////////////////////////////////READ////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+    //Leitura do uint cabeça, de um arquivo passado como parametro
     public static uint ReadCabeca(string file)
     {
-      var ultimoId = new byte[4];
+      var cabeca = new byte[4];
 
       var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      stream.Read(ultimoId, 0, ultimoId.Length);
+      stream.Read(cabeca, 0, cabeca.Length);
 
       stream.Close();
 
-      return BitConverter.ToUInt32(Utils.ReverseBytes(ultimoId));
-    }
-
-    public static uint QuantidadeRegistros(string file)
-    {
-      var quantregistroBytes = new byte[4];
-
-      var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-      stream.Read(quantregistroBytes, 0, quantregistroBytes.Length);
-
-      quantregistroBytes = Utils.ReverseBytes(quantregistroBytes);
-
-      var quantregistro = BitConverter.ToUInt32(quantregistroBytes);
-
-      stream.Close();
-
-      return quantregistro;
+      return BitConverter.ToUInt32(Utils.ReverseBytes(cabeca));
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,7 +291,43 @@ namespace Aeds3TP1
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////// PESQUISAR ////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //Retorna as contas com a cidade passada de parametro
+    public static List<Conta>? PesquisarCidade(string palavra)
+    {
+      var ids = PesquisarPalavra(palavra, fileCidade);
+      if (ids != null)
+      {
+        return PesquisarPessoaCidade(ids);
+      }
+      return null;
+    }
 
+    //Retorna as contas com a pessoa passada de parametro
+    public static List<Conta>? PesquisarPessoa(string palavra)
+    {
+
+      var ids = PesquisarPalavra(palavra, filePessoa);
+      if (ids != null)
+      {
+        return PesquisarPessoaCidade(ids);
+      }
+      return null;
+    }
+
+    //Retorna a lista com de todos os ids passados como parametros
+    public static List<Conta> PesquisarPessoaCidade(List<uint> ids)
+    {
+      var contas = new List<Conta>();
+
+      for (int i = 0; i < ids.Count; i++)
+      {
+        contas.Add(Conta.PesquisarConta(ids[i]));
+      }
+
+      return contas;
+    }
+
+    //Pesquisa uma string(nome ou cidade) em um arquivo especifico
     public static List<uint>? PesquisarPalavra(string palavra, string file)
     {
       var listapalavras = Utils.ExtrairPalavra(palavra);
@@ -321,18 +345,19 @@ namespace Aeds3TP1
           }
         }
       }
-      if (listaids.Count > 1)
+      if (listaids.Count > 1)//È utilizado quando tiver 2 ou mais listas de ids
       {
         return PesquisarIdString(listaids);
       }
-      if (listaids.Count != 0)
+      if (listaids.Count != 0)//È utilizado somente quando so tiver sido encontrado uma palavra no arquivo
       {
         return Utils.ExtrairIds(listaids[0]);
       }
 
-      return null;
+      return null;//se não houver nenhuma palavra retorna null
     }
 
+    //Retorna a intersecao de todos os ids, nas strings passadas como parametro
     static List<uint> PesquisarIdString(List<string> idsstring)
     {
       var ids = Utils.ExtrairIds(idsstring[0]);
@@ -346,31 +371,7 @@ namespace Aeds3TP1
 
       return ids;
     }
-
-    // static List<uint> PesquisaBinaria(List<uint> idsatual, List<uint> idspesquisar)
-    // {
-    //   var ids = new List<uint>();
-    //   int inf;
-    //   int sup;
-    //   int meio;
-    //   for (int i = 0; i < idspesquisar.Count; i++)
-    //   {
-    //     inf = 0;
-    //     sup = idsatual.Count - 1;
-    //     while (inf <= sup)
-    //     {
-    //       meio = (inf + sup) / 2;
-    //       if (idspesquisar[i] == idsatual[meio])
-    //         ids.Add(idspesquisar[i]);
-    //       if (idspesquisar[i] < idsatual[meio])
-    //         sup = meio - 1;
-    //       else
-    //         inf = meio + 1;
-    //     }
-    //   }
-    //   return ids;
-    // }
-
+    //Retorna a intersecao de todos os ids, nas duas listas uint passadas como parametro
     static List<uint> PesquisarIdString(List<uint> idsatual, List<uint> idspesquisar)
     {
       var ids = new List<uint>();
@@ -385,6 +386,8 @@ namespace Aeds3TP1
       return ids;
     }
 
+    //Retorna a lista passada como parametro, mas sem o idspesquisar
+    //parametro( {1,2,3,4,5}, 3) = return ( {1,2,4,5} )
     public static List<uint> PesquisarIdExcluir(List<uint> idsatual, uint idspesquisar)
     {
       var a = PesquisaBinaria(idsatual, idspesquisar);
@@ -395,7 +398,7 @@ namespace Aeds3TP1
 
       return idsatual;
     }
-
+    //Retorna a posicao do idspesquisar na lista
     static int PesquisaBinaria(List<uint> idsatual, uint idspesquisar)
     {
       int inf;
@@ -425,7 +428,7 @@ namespace Aeds3TP1
     /////////////////////////////////////////////////// UPDATE ///////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // incrementa o último id no início do arquivo e retorna o novo id
+    // Incrementa o último id no início do arquivo e retorna o novo id
     public static uint UpdateCabeca(string file)
     {
       var ultimoId = ReadCabeca(file);
@@ -436,7 +439,7 @@ namespace Aeds3TP1
 
       return newId;
     }
-
+    //Update na conta, no indice e nas listas invertidas
     public static void Update(uint id, Conta contaModificada)
     {
       var indiceConta = IndiceConta.ReadIdPesquisaBinaria(id);
@@ -452,16 +455,16 @@ namespace Aeds3TP1
           // colocar o registro anterior como excluído e criar um novo
 
           MarcarExcluido(indiceConta.Posicao, filePath);
-          // MarcarExcluido(indiceConta.PosInd, filePath2);
           ListaInvertida.UpdateInvertida(id, conta, contaModificada);
           var posicao = Write(0, contaModificada, SeekOrigin.End);
           indiceConta.Posicao = posicao;
+          //Muda somente a posição nova do arquivo
           IndiceConta.WriteIndice(indiceConta.PosInd, indiceConta, indexPath, SeekOrigin.Begin);
         }
         else
         {
           // o registro modificado é menor ou do mesmo tamanho que o registro antes da modificação
-          // sobrescrever o registro antigo com o novo
+          // sobrescrever o registro antigo com o novo e da update nas listas invertidas
 
           contaModificada.TotalBytes = conta.TotalBytes;
           ListaInvertida.UpdateInvertida(id, conta, contaModificada);
