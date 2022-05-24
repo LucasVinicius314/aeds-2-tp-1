@@ -29,6 +29,7 @@ namespace Aeds3TP1
 #endif
     }
 
+    // Teste de inserção de valores
     static void InsertTest()
     {
       Write(new Conta

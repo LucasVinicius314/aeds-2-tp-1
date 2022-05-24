@@ -136,6 +136,8 @@ namespace Aeds3TP1
       stream.Close();
     }
 
+
+    // Adiciona a conta atual ao arquivo fs
     public void WriteToStream(FileStream fs)
     {
       fs.WriteByte((byte)this.Lapide);
@@ -144,20 +146,25 @@ namespace Aeds3TP1
       fs.Write(Utils.ReverseBytes(BitConverter.GetBytes(this.Posicao)));
     }
 
+    // Método principal de ordenação
     public static void OrdenaIndice()
     {
       var quantidadeRegistros = Program.ReadCabeca(Program.indexPath);
 
+      // Define a quantidade de iterações desejadas
       var halfQuantidade = Math.Floor((double)quantidadeRegistros / 2);
 
       var enumerator = new IndiceContaEnumerator() { filePath = Program.indexPath };
 
+      // Declara as streams de arquivo necessárias para os arquivos temporários
       var stream1 = new FileStream(Program.tempFile1, FileMode.Create, FileAccess.ReadWrite);
       var stream2 = new FileStream(Program.tempFile2, FileMode.Create, FileAccess.ReadWrite);
 
       for (int i = 0; i <= halfQuantidade; i++)
       {
         var list = new List<IndiceConta>();
+
+        // Recupera os próximos valores
 
         var one = enumerator.Next();
 
@@ -178,6 +185,7 @@ namespace Aeds3TP1
         }
         else
         {
+          // Define a ordem que os valores serão escritos, através da comparação do id conta deles
           if (one.IdConta < two.IdConta)
           {
             list.Add(one);
@@ -190,6 +198,7 @@ namespace Aeds3TP1
           }
         }
 
+        // Escreve os valores recuperados e ordenados
         foreach (var contaIndex in list)
         {
           if (i % 2 == 0)
@@ -208,19 +217,23 @@ namespace Aeds3TP1
 
       enumerator.ToString();
 
+      // Lista os 2 arquivos temporários
       OutputFileTemp1();
       OutputFileTemp2();
 
+      // Chama a segunda parte de ordenação do arquivo
       OrdenaInterno();
 
       var temp3 = new IndiceContaEnumerator() { curIndex = 0, filePath = Program.tempFile3 }.AsList();
 
+      // Define a stream de saída que substituirá o arquivo de índice
       var finalStream = new FileStream(Program.indexPath, FileMode.Create, FileAccess.ReadWrite);
 
       finalStream.Write(Utils.ReverseBytes(BitConverter.GetBytes(temp3.Count)));
 
       foreach (var item in temp3)
       {
+        // Filtra a escrita dos registros, não incluindo arquivos demarcados por lápide
         if (item.Lapide != '*')
         {
           item.WriteToStream(finalStream);
@@ -230,6 +243,7 @@ namespace Aeds3TP1
       finalStream.Close();
     }
 
+    // Segunda camada de ordenação
     static void OrdenaInterno()
     {
       var index = -1;
@@ -240,6 +254,7 @@ namespace Aeds3TP1
       var lock1 = false;
       var lock2 = false;
 
+      // Apaga os arquivos temporários
       File.Delete(Program.tempFile3);
       File.Delete(Program.tempFile4);
 
@@ -247,6 +262,7 @@ namespace Aeds3TP1
       {
         index++;
 
+        // Declara o enumerador que representa a leitura dos registros do arquivo
         var tempReadStream1 = new IndiceContaEnumerator() { filePath = Program.tempFile1, curIndex = lastPos1 };
 
         var tempList1 = new List<IndiceConta>();
@@ -260,10 +276,12 @@ namespace Aeds3TP1
             break;
           }
 
+          // Lê o próximo registro
           var read = tempReadStream1.Next();
 
           if (read == null)
           {
+            // Caso o registro seja nulo, ativa a flag que contribui para a saída do loop principal
             lock1 = true;
 
             break;
@@ -279,6 +297,7 @@ namespace Aeds3TP1
             }
           }
 
+          // Registra a nova posição do cursor do arquivo
           last1 = read.IdConta;
 
           tempList1.Add(read);
@@ -301,6 +320,7 @@ namespace Aeds3TP1
 
           if (read == null)
           {
+            // Caso o registro seja nulo, ativa a flag que contribui para a saída do loop principal
             lock2 = true;
 
             break;
@@ -316,6 +336,7 @@ namespace Aeds3TP1
             }
           }
 
+          // Registra a nova posição do cursor do arquivo
           last2 = read.IdConta;
 
           tempList2.Add(read);
@@ -323,6 +344,7 @@ namespace Aeds3TP1
 
         var newList = new List<IndiceConta>();
 
+        // Junção das 2 sequências de registros
         newList.AddRange(tempList1);
         newList.AddRange(tempList2);
 
@@ -342,10 +364,12 @@ namespace Aeds3TP1
           }
         });
 
+        // Declara a stream de saída do arquivo temporário
         var writeStream = new FileStream(index % 2 == 0 ? Program.tempFile3 : Program.tempFile4, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
         writeStream.Seek(0, SeekOrigin.End);
 
+        // Percorre os registros, os adicionando ao arquivo
         foreach (var item in newList)
         {
           item.WriteToStream(writeStream);
@@ -353,8 +377,7 @@ namespace Aeds3TP1
 
         writeStream.Close();
 
-        "".ToString();
-
+        // Verifica se o loop principal deve ser quebrado
         if (lock1 && lock2)
         {
           goto main;
@@ -363,6 +386,7 @@ namespace Aeds3TP1
 
     main:
 
+      // Apaga os arquivos temporários
       File.Delete(Program.tempFile1);
       File.Delete(Program.tempFile2);
 
@@ -384,10 +408,12 @@ namespace Aeds3TP1
 
       if (index != 0)
       {
+        // Chama a segunda camada de ordenação novamente de forma recursiva, caso os registros ainda não se encontrem ordenados
         OrdenaInterno();
       }
     }
 
+    // Lista o conteúdo do arquivo temporário 1
     static void OutputFileTemp1()
     {
       var tempReadStream1 = new IndiceContaEnumerator() { filePath = Program.tempFile1, curIndex = 0 };
@@ -407,6 +433,7 @@ namespace Aeds3TP1
       }
     }
 
+    // Lista o conteúdo do arquivo temporário 2
     static void OutputFileTemp2()
     {
       var tempReadStream1 = new IndiceContaEnumerator() { filePath = Program.tempFile2, curIndex = 0 };
@@ -427,6 +454,7 @@ namespace Aeds3TP1
     }
   }
 
+  // Classe que representa uma stream de leitura de um arquivo com índices que itera retornando IndiceContas
   class IndiceContaEnumerator
   {
     public string filePath = String.Empty;
