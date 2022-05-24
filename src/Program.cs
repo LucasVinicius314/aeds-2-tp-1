@@ -25,7 +25,7 @@ namespace Aeds3TP1
       TestOrdem();
       // InsertTest();
 #else
-      // Menu.Principal();
+      Menu.Principal();
 #endif
     }
 
