@@ -38,10 +38,13 @@ namespace Aeds3TP1
     {
       // ler cada conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe
       var indiceConta = new IndiceConta();
+
       var stream = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
       stream.Seek(offset, seekOrigin);
+
       var posind = stream.Position;
-      // stream.Seek(0, SeekOrigin.Begin);
+
       char lapide = (char)stream.ReadByte();
 
       int totalBytesBytes = stream.ReadByte();

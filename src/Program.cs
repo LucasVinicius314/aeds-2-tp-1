@@ -21,9 +21,9 @@ namespace Aeds3TP1
       // executar o programa normalmente caso não esteja rodando como debug
 
 #if DEBUG
-      //Test();
-      TestOrdem();
-      // InsertTest();
+      InsertTest();
+      Test();
+      //TestOrdem();
 #else
       Menu.Principal();
 #endif
@@ -68,49 +68,50 @@ namespace Aeds3TP1
 
       "".ToString();
 
-      // Write(new Conta
-      // {
-      //   Cidade = "sergipe",
-      //   Cpf = "890890890",
-      //   IdConta = 9,
-      //   Lapide = '\0',
-      //   NomePessoa = "marcelo pedro",
-      //   SaldoConta = 4000,
-      //   TotalBytes = 0,
-      //   TransferenciasRealizadas = 0,
-      // });
-      // Write(new Conta
-      // {
-      //   Cidade = "sergipe",
-      //   Cpf = "890890890",
-      //   IdConta = 2,
-      //   Lapide = '\0',
-      //   NomePessoa = "marcelo pedro",
-      //   SaldoConta = 4000,
-      //   TotalBytes = 0,
-      //   TransferenciasRealizadas = 0,
-      // });
-      // Write(new Conta
-      // {
-      //   Cidade = "sergipe",
-      //   Cpf = "890890890",
-      //   IdConta = 3,
-      //   Lapide = '\0',
-      //   NomePessoa = "marcelo pedro",
-      //   SaldoConta = 4000,
-      //   TotalBytes = 0,
-      //   TransferenciasRealizadas = 0,
-      // });
+      Write(new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "890890890",
+        IdConta = 9,
+        Lapide = '\0',
+        NomePessoa = "marcelo pedro",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      });
+      Write(new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "890890890",
+        IdConta = 2,
+        Lapide = '\0',
+        NomePessoa = "marcelo pedro",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      });
+      Write(new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "890890890",
+        IdConta = 3,
+        Lapide = '\0',
+        NomePessoa = "marcelo pedro",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      });
     }
 
     // método de teste para testar o funcionamento das operações de forma mais isolada
+
+
     static void Test()
     {
-      LimpaArquivo(filePath);
-      LimpaArquivo(indexPath);
-      LimpaArquivo(fileCidade);
-      LimpaArquivo(filePessoa);
-
+      // LimpaArquivo(filePath);
+      // LimpaArquivo(indexPath);
+      // LimpaArquivo(fileCidade);
+      // LimpaArquivo(filePessoa);
       Console.WriteLine("=== Conta");
 
       var conta = new Conta
@@ -129,11 +130,10 @@ namespace Aeds3TP1
 
       Write(conta); // teste de escrita
       Write(conta); // teste de escrita
+
       Console.WriteLine("=== Obj");
-
-      //var obj = ReadId(1); // teste de leitura
-
-      //Console.WriteLine(obj);
+      var obj = Conta.PesquisarConta(1);
+      Console.WriteLine(obj);
 
       var conta2 = new Conta
       {
@@ -150,8 +150,6 @@ namespace Aeds3TP1
       Update(1, conta2); // teste de atualização
 
       Console.WriteLine("=== Obj2");
-
-      //var obj2 = ReadId(1); // teste de leitura
       var obj2 = Conta.PesquisarConta(1);
       Console.WriteLine(obj2);
 
@@ -168,6 +166,9 @@ namespace Aeds3TP1
 
       resposta1 = IndiceConta.ReadIdPesquisaBinaria((uint)2);
       Console.WriteLine(resposta1);
+
+      var obj3 = Conta.PesquisarConta(4);
+      Console.WriteLine(obj3);
 
       ExcluirId(1);
     }
