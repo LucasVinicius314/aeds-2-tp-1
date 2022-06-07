@@ -9,6 +9,7 @@ namespace Aeds3TP1
     public static string indexPath = "res/index.dat";
     public static string filePessoa = "res/listainvertidapessoa.dat";
     public static string fileCidade = "res/listainvertidacidade.dat";
+    public static string fileCompactar = "res/dicionario.dat";
     public static string tempFile1 = "res/temp1.tmp";
     public static string tempFile2 = "res/temp2.tmp";
     public static string tempFile3 = "res/temp3.tmp";
