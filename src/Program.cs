@@ -33,6 +33,11 @@ namespace Aeds3TP1
     // Teste de inserção de valores
     static void InsertTest()
     {
+      LimpaArquivo(filePath);
+      LimpaArquivo(indexPath);
+      LimpaArquivo(fileCidade);
+      LimpaArquivo(filePessoa);
+      // LimpaArquivo(fileCompactar);
       Write(new Conta
       {
         Cidade = "sergipe",
@@ -109,10 +114,6 @@ namespace Aeds3TP1
 
     static void Test()
     {
-      // LimpaArquivo(filePath);
-      // LimpaArquivo(indexPath);
-      // LimpaArquivo(fileCidade);
-      // LimpaArquivo(filePessoa);
       Console.WriteLine("=== Conta");
 
       var conta = new Conta
@@ -172,6 +173,11 @@ namespace Aeds3TP1
       Console.WriteLine(obj3);
 
       ExcluirId(1);
+      Compactar compactar = new Compactar();
+      // compactar.CompactarLZW("ABRA CADABRA");
+      // compactar.CompactarLZW("AB");
+      var lista = new List<int> { 77, 74, 72 };
+      compactar.DesCompactarVersao(4, lista);
     }
 
     // método de teste para testar o funcionamento das operações de forma mais isolada
