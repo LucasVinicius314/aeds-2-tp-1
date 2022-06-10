@@ -80,19 +80,19 @@ namespace Aeds3TP1
 
       if (resp != null)
       {
-        return Read(resp.Posicao);
+        return Read(resp.Posicao, Program.filePath);
       }
 
       return null;
     }
 
-    public static Conta Read(long offset)
+    public static Conta Read(long offset, string file)
     {
       // ler cara conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe
 
       #region Arquivo
 
-      var stream = new FileStream(Program.filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+      var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
       stream.Seek(offset, SeekOrigin.Begin);
 

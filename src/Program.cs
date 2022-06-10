@@ -5,6 +5,9 @@ namespace Aeds3TP1
   class Program
   {
     // caminho do arquivo de dados
+    public static string caminhoAquivo = "res/";
+    public static string principalArquivo = "data";
+    public static string tipoArquivo = ".dat";
     public static string filePath = "res/data.dat";
     public static string indexPath = "res/index.dat";
     public static string filePessoa = "res/listainvertidapessoa.dat";
@@ -22,7 +25,7 @@ namespace Aeds3TP1
       // executar o programa normalmente caso não esteja rodando como debug
 
 #if DEBUG
-      InsertTest();
+      // InsertTest();
       Test();
       //TestOrdem();
 #else
@@ -41,21 +44,21 @@ namespace Aeds3TP1
       Write(new Conta
       {
         Cidade = "sergipe",
-        Cpf = "890890890",
+        Cpf = "190890890",
         IdConta = 32,
         Lapide = '\0',
-        NomePessoa = "marcelo pedro",
+        NomePessoa = "leandro",
         SaldoConta = 4000,
         TotalBytes = 0,
         TransferenciasRealizadas = 0,
       });
       Write(new Conta
       {
-        Cidade = "sergipe",
-        Cpf = "890890890",
+        Cidade = "belo horizonte",
+        Cpf = "290890890",
         IdConta = 64,
         Lapide = '\0',
-        NomePessoa = "marcelo pedro",
+        NomePessoa = "tiago pedro",
         SaldoConta = 4000,
         TotalBytes = 0,
         TransferenciasRealizadas = 0,
@@ -63,10 +66,10 @@ namespace Aeds3TP1
       Write(new Conta
       {
         Cidade = "sergipe",
-        Cpf = "890890890",
+        Cpf = "390890890",
         IdConta = 68,
         Lapide = '\0',
-        NomePessoa = "marcelo pedro",
+        NomePessoa = "pedro leandro",
         SaldoConta = 4000,
         TotalBytes = 0,
         TransferenciasRealizadas = 0,
@@ -76,22 +79,22 @@ namespace Aeds3TP1
 
       Write(new Conta
       {
-        Cidade = "sergipe",
-        Cpf = "890890890",
+        Cidade = "joao pessoa",
+        Cpf = "490890890",
         IdConta = 9,
         Lapide = '\0',
-        NomePessoa = "marcelo pedro",
+        NomePessoa = "marcelinho jose",
         SaldoConta = 4000,
         TotalBytes = 0,
         TransferenciasRealizadas = 0,
       });
       Write(new Conta
       {
-        Cidade = "sergipe",
-        Cpf = "890890890",
+        Cidade = "maranhao",
+        Cpf = "590890890",
         IdConta = 2,
         Lapide = '\0',
-        NomePessoa = "marcelo pedro",
+        NomePessoa = "jose carvalho",
         SaldoConta = 4000,
         TotalBytes = 0,
         TransferenciasRealizadas = 0,
@@ -99,10 +102,10 @@ namespace Aeds3TP1
       Write(new Conta
       {
         Cidade = "sergipe",
-        Cpf = "890890890",
+        Cpf = "690890890",
         IdConta = 3,
         Lapide = '\0',
-        NomePessoa = "marcelo pedro",
+        NomePessoa = "lucas jose",
         SaldoConta = 4000,
         TotalBytes = 0,
         TransferenciasRealizadas = 0,
@@ -114,6 +117,11 @@ namespace Aeds3TP1
 
     static void Test()
     {
+      // InsertTest();
+      LimpaArquivo(filePath);
+      LimpaArquivo(indexPath);
+      LimpaArquivo(fileCidade);
+      LimpaArquivo(filePessoa);
       Console.WriteLine("=== Conta");
 
       var conta = new Conta
@@ -127,7 +135,17 @@ namespace Aeds3TP1
         TotalBytes = 0,
         TransferenciasRealizadas = 0,
       };
-
+      Write(new Conta
+      {
+        Cidade = "sergipe",
+        Cpf = "690890890",
+        IdConta = 3,
+        Lapide = '\0',
+        NomePessoa = "lucas jose",
+        SaldoConta = 4000,
+        TotalBytes = 0,
+        TransferenciasRealizadas = 0,
+      });
       Console.WriteLine(conta);
 
       Write(conta); // teste de escrita
@@ -176,8 +194,11 @@ namespace Aeds3TP1
       Compactar compactar = new Compactar();
       // compactar.CompactarLZW("ABRA CADABRA");
       // compactar.CompactarLZW("AB");
-      var lista = new List<int> { 77, 74, 72 };
-      compactar.DesCompactarVersao(4, lista);
+      // var lista = new List<int> { 77, 74, 72 };
+      // compactar.DesCompactarVersao(4, lista);
+      // DescompactarContas();
+      CompactarContas();
+      DescompactarContas("res/dataCompressao1.dat");
     }
 
     // método de teste para testar o funcionamento das operações de forma mais isolada
@@ -209,7 +230,7 @@ namespace Aeds3TP1
 
       conta.IdConta = id;
 
-      var posicao = Write(0, conta, SeekOrigin.End);
+      var posicao = Write(0, conta, SeekOrigin.End, filePath);
 
       ListaInvertida.WriteListaInvertidaPessoa(conta);
       ListaInvertida.WriteListaInvertidaCidade(conta);
@@ -238,9 +259,9 @@ namespace Aeds3TP1
     }
 
     // Escreve uma nova conta no arquivo com o offset desejado e sua origem
-    static long Write(long posicao, Conta conta, SeekOrigin seekOrigin)
+    static long Write(long posicao, Conta conta, SeekOrigin seekOrigin, string file)
     {
-      var stream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+      var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
       stream.Seek(posicao, seekOrigin);
       var pos = stream.Position;
@@ -304,7 +325,7 @@ namespace Aeds3TP1
 
       if (indiceConta != null)
       {
-        var conta = Conta.Read(indiceConta.Posicao);
+        var conta = Conta.Read(indiceConta.Posicao, filePath);
 
         MarcarExcluido(indiceConta.Posicao, filePath);
         MarcarExcluido(indiceConta.PosInd, indexPath);
@@ -344,6 +365,14 @@ namespace Aeds3TP1
 
       stream.Close();
     }
+    static void LimpaTudo()
+    {
+      LimpaArquivo(filePath);
+      LimpaArquivo(indexPath);
+      LimpaArquivo(fileCidade);
+      LimpaArquivo(filePessoa);
+    }
+
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -365,6 +394,24 @@ namespace Aeds3TP1
       stream.Close();
 
       return BitConverter.ToUInt32(Utils.ReverseBytes(cabeca));
+    }
+
+    static List<Conta> ReadTodasContas(string file)
+    {
+      List<Conta> contas = new List<Conta>() { };
+      long posicao = 4;
+      var conta = Conta.Read(posicao, file);
+      while (conta.IdConta != 0)
+      {
+        if (conta.Lapide != '*')
+        {
+          contas.Add(conta);
+        }
+        posicao += conta.TotalBytes;
+        conta = Conta.Read(posicao, file);
+      }
+
+      return contas;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -528,7 +575,7 @@ namespace Aeds3TP1
       var indiceConta = IndiceConta.ReadIdPesquisaBinaria(id);
       if (indiceConta != null)
       {
-        var conta = Conta.Read(indiceConta.Posicao);
+        var conta = Conta.Read(indiceConta.Posicao, filePath);
         contaModificada.IdConta = id;
         contaModificada.TotalBytes = contaModificada.GetSomaBytes();
 
@@ -539,7 +586,7 @@ namespace Aeds3TP1
 
           MarcarExcluido(indiceConta.Posicao, filePath);
           ListaInvertida.UpdateInvertida(id, conta, contaModificada);
-          var posicao = Write(0, contaModificada, SeekOrigin.End);
+          var posicao = Write(0, contaModificada, SeekOrigin.End, filePath);
           indiceConta.Posicao = posicao;
           //Muda somente a posição nova do arquivo
           IndiceConta.WriteIndice(indiceConta.PosInd, indiceConta, indexPath, SeekOrigin.Begin);
@@ -551,7 +598,7 @@ namespace Aeds3TP1
 
           contaModificada.TotalBytes = conta.TotalBytes;
           ListaInvertida.UpdateInvertida(id, conta, contaModificada);
-          Write(indiceConta.Posicao, contaModificada, SeekOrigin.Begin);
+          Write(indiceConta.Posicao, contaModificada, SeekOrigin.Begin, filePath);
         }
       }
     }
@@ -574,6 +621,53 @@ namespace Aeds3TP1
       Update(contaCreditar.IdConta, contaCreditar);
 
       return null;
+    }
+    public static void CompactarContas()
+    {
+      CompactarContas(ReadTodasContas(filePath), "data", ReadCabeca(filePath), filePath);
+    }
+    static void CompactarContas(List<Conta> contas, string purefile, uint cabeca, string file)
+    {
+      Compactar compactar = new Compactar();
+      var aquivo = caminhoAquivo + purefile + "Compressao" + compactar.Versao + tipoArquivo;
+      LimpaArquivo(aquivo);
+      WriteCabeca(cabeca, aquivo);
+      for (int i = 0; i < contas.Count; i++)
+      {
+        contas[i].Cidade = compactar.CompactarLZW(contas[i].Cidade);
+        contas[i].NomePessoa = compactar.CompactarLZW(contas[i].NomePessoa);
+        contas[i].Cpf = compactar.CompactarLZW(contas[i].Cpf);
+        contas[i].TotalBytes = contas[i].GetSomaBytes();
+        Program.Write(0, contas[i], SeekOrigin.End, aquivo);
+      }
+      compactar.WriteDicionarioAtual();
+    }
+    static uint ExtrairNum(string nome)
+    {
+      var num = new string(nome.Where(char.IsDigit).ToArray());
+      return Convert.ToUInt32(num);
+    }
+    static void DescompactarContas(string file)
+    {
+      var versao = ExtrairNum(file);
+      var contas = ReadTodasContas(file);
+      Compactar compactar = new Compactar();
+      compactar.UpdateVersao(versao);
+      // var lista = new List<int> { 0, 1, 17, 0, 26, 2, 0, 3, 63, 65 }; versao 1
+      // var lista = new List<int> { 71, 66, 68, 70, 64, 0 }; versao 2
+      // var a = compactar.DesCompactarLZW(lista);
+      for (int i = 0; i < contas.Count; i++)
+      {
+        contas[i].Cidade = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].Cidade));
+        contas[i].NomePessoa = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].NomePessoa));
+        contas[i].Cpf = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].Cpf));
+        contas[i].TotalBytes = contas[i].GetSomaBytes();
+      }
+      LimpaTudo();
+      for (int i = 0; i < contas.Count; i++)
+      {
+        Write(contas[i]);
+      }
     }
   }
 }

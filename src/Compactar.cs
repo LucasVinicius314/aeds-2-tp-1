@@ -23,7 +23,7 @@ namespace Aeds3TP1
       {
         List<string> Dicionario = new List<string>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" };
         WriteDicionario(UpdateCabeca(), Dicionario);
-
+        UpdateVersao(ultimaVersao + 1);
       }
     }
     void UpdateUltimaVersao()
@@ -34,7 +34,7 @@ namespace Aeds3TP1
         UpdateVersao(ultimaVersao);
       }
     }
-    bool UpdateVersao(uint versao)
+    public bool UpdateVersao(uint versao)
     {
       var comp = ReadDicionario(versao);
       if (comp != null)
@@ -70,9 +70,63 @@ namespace Aeds3TP1
 
       return soma;
     }
-    public void CompactarLZW(string args)
+    // public string CompactarLZW(Compactar dic, string args)
+    // {
+    //   // UpdateUltimaVersao();
+
+    //   var contaNumeros = 0.0;
+    //   String numeros = "";
+    //   for (int i = 0; i < args.Length; i++)
+    //   {
+    //     for (int j = dic.Dicionario.Count - 1; j != -1; j--)
+    //     {
+    //       var palav = somarLetras(args, i, dic.Dicionario[j].Length);
+    //       var posicao = i + dic.Dicionario[j].Length;
+
+    //       if (palav == dic.Dicionario[j])
+    //       {
+    //         numeros += " " + (j);
+    //         contaNumeros++;
+    //         if (posicao < args.Length)
+    //         {
+    //           dic.Dicionario.Add(palav + "" + args[posicao]);
+    //           i += dic.Dicionario[j].Length - 1;
+    //         }
+    //         else
+    //         {
+    //           i = args.Length;
+    //         }
+    //         break;
+    //       }
+    //       else if (j == 0)
+    //       {
+    //         if (posicao < args.Length)
+    //         {
+    //           contaNumeros++;
+    //           numeros += dic.Dicionario.Count + " ";
+    //           dic.Dicionario.Add(palav);
+    //         }
+    //         else
+    //         {
+    //           i = args.Length;
+    //         }
+    //         break;
+    //       }
+
+    //     }
+    //   }
+    //   var economia = 1.00 - ((contaNumeros * 4) / (args.Length * 2));
+    //   Console.WriteLine("conta numeros:" + (contaNumeros));
+    //   Console.WriteLine("Economia de espaço/perda: " + Math.Round(economia, 4) * 100 + "%");
+
+    //   WriteDicionario(UpdateCabeca(), dic.Dicionario);
+
+    //   return numeros;
+    // }
+
+    public string CompactarLZW(string args)
     {
-      UpdateUltimaVersao();
+      // UpdateUltimaVersao();
       //{ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" }
       // List<String> dicionario = new List<String>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " " };
       // List<String> dicionario = new List<String>() { "a", "b", "w" };
@@ -82,7 +136,7 @@ namespace Aeds3TP1
       // String args = "" + pa;
       // var contar = (frase);
       var contaNumeros = 0.0;
-      String numeros = "";
+      string numeros = "";
       for (int i = 0; i < args.Length; i++)
       {
         for (int j = Dicionario.Count - 1; j != -1; j--)
@@ -92,7 +146,7 @@ namespace Aeds3TP1
 
           if (palav == Dicionario[j])
           {
-            numeros += (j) + " ";
+            numeros += " " + (j);
             contaNumeros++;
             if (posicao < args.Length)
             {
@@ -122,11 +176,12 @@ namespace Aeds3TP1
 
         }
       }
-      var economia = 1.00 - (contaNumeros / args.Length);
+      var economia = 1.00 - ((contaNumeros * 4) / (args.Length * 2));
       Console.WriteLine("conta numeros:" + (contaNumeros));
       Console.WriteLine("Economia de espaço/perda: " + Math.Round(economia, 4) * 100 + "%");
 
-      WriteDicionario(UpdateCabeca(), Dicionario);
+      // WriteDicionario(UpdateCabeca(), Dicionario);
+      return numeros;
     }
     public string DesCompactarVersao(uint versao, List<int> numeros)
     {
@@ -137,15 +192,36 @@ namespace Aeds3TP1
 
       return "Versao Invalida";
     }
-    string DesCompactarLZW(List<int> numeros)
+    // string DesCompactarLZW(List<int> numeros)
+    // {
+    //   String palavra = "";
+    //   for (int i = 0; i < numeros.Count; i++)
+    //   {
+    //     palavra += Dicionario[numeros[i]];
+    //   }
+    //   return palavra;
+    // }
+    public string DesCompactarLZW(List<int> numeros)
     {
-      var contaNumeros = 0.0;
       String palavra = "";
+      String add = "";
       for (int i = 0; i < numeros.Count; i++)
       {
-        palavra += Dicionario[numeros[i]];
+        add = Dicionario[numeros[i]];
+        palavra += add;
+
+        if (i != numeros.Count - 1)
+        {
+          add += Dicionario[numeros[i + 1]][0];
+          Dicionario.Add(add);
+        }
       }
       return palavra;
+    }
+
+    public void WriteDicionarioAtual()
+    {
+      WriteDicionario(UpdateCabeca(), Dicionario);
     }
     static void WriteDicionario(uint versao, List<string> dicionario)
     {

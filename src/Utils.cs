@@ -31,17 +31,28 @@ namespace Aeds3TP1
       return listaId;
     }
 
-    //Retorna umas lista com todos os ids da string
     public static List<uint> ExtrairIds(string palavras)
+    {
+      var ids = Extrair(palavras);
+      ids.Sort();
+      return ids;
+    }
+    //Retorna umas lista com todos os ids da string
+    public static List<uint> Extrair(string palavras)
     {
       var num = String.Empty;
       var tamanho = palavras.Length;
 
       var listaid = new List<uint>();
+      var i = 0;
+      if (palavras[0] == ' ')
+      {
+        i++;
+      }
 
       if (palavras != String.Empty)
       {
-        for (int i = 0; i < tamanho; i++)
+        for (; i < tamanho; i++)
         {
           if (palavras[i] != ' ')
           {
@@ -56,11 +67,19 @@ namespace Aeds3TP1
         }
 
         listaid.Add(UInt32.Parse(num));
-
-        listaid.Sort();
       }
 
       return listaid;
+    }
+    public static List<int> ExtrairNumeros(string palavras)
+    {
+      var ouint = Extrair(palavras);
+      var lista = new List<int>() { };
+      for (int i = 0; i < ouint.Count; i++)
+      {
+        lista.Add((int)ouint[i]);
+      }
+      return lista;
     }
 
     //Pega todoas as palavras de uma mesma string, e retorna uma lista com todas as palavras separadas
@@ -89,5 +108,29 @@ namespace Aeds3TP1
       return listapalavras;
     }
 
+    public static List<string> ExtrairArquivo(string palavras)
+    {
+      var palavra = String.Empty;
+      var tamanho = palavras.Length;
+
+      var listapalavras = new List<string>();
+
+      for (int i = 0; i < tamanho; i++)
+      {
+        if (palavras[i] != ' ')
+        {
+          palavra += palavras[i];
+        }
+        else
+        {
+          listapalavras.Add(palavra);
+          palavra = String.Empty;
+        }
+      }
+
+      listapalavras.Add(palavra);
+
+      return listapalavras;
+    }
   }
 }
