@@ -238,6 +238,7 @@ namespace Aeds3TP1
       var cabeca = sr.ReadLine();
 
       sr.Close();
+      sb.Close();
       if (cabeca == null)
       {
         WriteCabeca(0);
