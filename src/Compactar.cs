@@ -229,59 +229,59 @@ namespace Aeds3TP1
     }
 
     //Leitura do uint cabeça, de um arquivo passado como parametro
-    // static uint ReadCabeca()
-    // {
-    //   FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate);
-
-    //   StreamReader sr = new StreamReader(sb);
-
-    //   var cabeca = sr.ReadLine();
-
-    //   sr.Close();
-    //   sb.Close();
-    //   if (cabeca == null)
-    //   {
-    //     WriteCabeca(0);
-    //     return 0;
-    //   }
-
-    //   return Convert.ToUInt32(cabeca);
-    // }
-    public static uint ReadCabeca()
+    static uint ReadCabeca()
     {
-      var cabeca = new byte[4];
+      FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate);
 
-      var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+      StreamReader sr = new StreamReader(sb);
 
-      stream.Read(cabeca, 0, cabeca.Length);
+      var cabeca = sr.ReadLine();
 
-      stream.Close();
+      sr.Close();
+      sb.Close();
+      if (cabeca == null)
+      {
+        WriteCabeca(0);
+        return 0;
+      }
 
-      return BitConverter.ToUInt32(Utils.ReverseBytes(cabeca));
+      return Convert.ToUInt32(cabeca);
     }
+    // public static uint ReadCabeca()
+    // {
+    //   var cabeca = new byte[4];
+
+    //   var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+    //   stream.Read(cabeca, 0, cabeca.Length);
+
+    //   stream.Close();
+
+    //   return BitConverter.ToUInt32(Utils.ReverseBytes(cabeca));
+    // }r
 
     //Escreve na posicao inicial do arquivo um uint passado como parametro
-    // static void WriteCabeca(uint cabeca)
-    // {
-    //   FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-    //   StreamWriter sr = new StreamWriter(sb);
-
-    //   sr.WriteLine(cabeca); // escreve o id incrementado
-
-    //   sr.Close();
-    //   sb.Close();
-    // }
     static void WriteCabeca(uint cabeca)
     {
-      var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+      FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      var newBytes = Utils.ReverseBytes(BitConverter.GetBytes(cabeca));
+      StreamWriter sr = new StreamWriter(sb);
 
-      stream.Write(newBytes); // escreve o id incrementado
+      sr.WriteLine(cabeca); // escreve o id incrementado
 
-      stream.Close();
+      sr.Close();
+      sb.Close();
     }
+    // static void WriteCabeca(uint cabeca)
+    // {
+    //   var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
+    //   var newBytes = Utils.ReverseBytes(BitConverter.GetBytes(cabeca));
+
+    //   stream.Write(newBytes); // escreve o id incrementado
+    //   stream.Write(BitConverter.GetBytes('\n'));
+    //   stream.Close();
+    // }
 
     //Pega todoas as palavras de uma mesma string, e retorna uma lista com todas as palavras separadas
     public static List<string> ExtrairPalavra(string palavras)
