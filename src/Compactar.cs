@@ -231,7 +231,9 @@ namespace Aeds3TP1
     //Leitura do uint cabeça, de um arquivo passado como parametro
     static uint ReadCabeca()
     {
-      StreamReader sr = new StreamReader(Program.fileCompactar);
+      FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate);
+
+      StreamReader sr = new StreamReader(sb);
 
       var cabeca = sr.ReadLine();
 
