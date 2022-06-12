@@ -118,10 +118,12 @@ namespace Aeds3TP1
     static void Test()
     {
       InsertTest();
+
       // LimpaArquivo(filePath);
       // LimpaArquivo(indexPath);
       // LimpaArquivo(fileCidade);
       // LimpaArquivo(filePessoa);
+
       Console.WriteLine("=== Conta");
 
       var conta = new Conta

@@ -429,10 +429,6 @@ namespace Aeds3TP1
         {
           return;
         }
-
-        Console.WriteLine("read new value temp 1");
-        Console.WriteLine(read?.IdConta);
-        Console.WriteLine("\n");
       }
     }
 
@@ -449,10 +445,6 @@ namespace Aeds3TP1
         {
           return;
         }
-
-        Console.WriteLine("read new value temp 2");
-        Console.WriteLine(read?.IdConta);
-        Console.WriteLine("\n");
       }
     }
   }

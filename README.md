@@ -1,5 +1,13 @@
 # aeds-3-tp-1
 
+### Rodar
+
+dotnet run
+
+### Rodar teste
+
+dotnet run -c release
+
 ### Descrição
 
 Neste trabalho, você deverá implementar um sistema responsável por realizar operações de
