@@ -56,6 +56,8 @@ namespace Aeds3TP1
 
       return BitConverter.ToUInt32(BitConverter.GetBytes(totalbytes));
     }
+
+    //soma as letras a partir de uma posição em uma string
     string somarLetras(string frase, int posicao, int quantLetras)
     {
       string soma = "";
@@ -124,19 +126,10 @@ namespace Aeds3TP1
     //   return numeros;
     // }
 
+    //utilição do metodo de compactação LZW
     public string CompactarLZW(string args)
     {
-      // UpdateUltimaVersao();
-      //{ "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" }
-      // List<String> dicionario = new List<String>() { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", " " };
-      // List<String> dicionario = new List<String>() { "a", "b", "w" };
-      // var pa = Console.ReadLine(); // input do usuário
-      // var pa = "ABRA CADABRA";
-      // var pa = "wabbawabba";
-      // String args = "" + pa;
-      // var contar = (frase);
-      var contaNumeros = 0.0;
-      string numeros = "";
+      string numeros = "";//string de numero que sera retornada com a compactação
       for (int i = 0; i < args.Length; i++)
       {
         for (int j = Dicionario.Count - 1; j != -1; j--)
@@ -144,11 +137,12 @@ namespace Aeds3TP1
           var palav = somarLetras(args, i, Dicionario[j].Length);
           var posicao = i + Dicionario[j].Length;
 
+          //verifica sempre a mesma quantidade de letras da posicao do dicionario atual
           if (palav == Dicionario[j])
           {
             numeros += " " + (j);
-            contaNumeros++;
-            if (posicao < args.Length)
+            //impede a verificação acima da quantidade de letras da palavra
+            if (posicao < args.Length) // Ex: não verificar as 2 letras restantes com 3 da posicao atual do dicionario
             {
               Dicionario.Add(palav + "" + args[posicao]);
               i += Dicionario[j].Length - 1;
@@ -159,12 +153,11 @@ namespace Aeds3TP1
             }
             break;
           }
-          else if (j == 0)
-          {
+          else if (j == 0)//acabou o dicionario e adiciona a palavra nova ao dicionario
+          {//esse caso seria utilizado com um dicionario imcompleto
             if (posicao < args.Length)
             {
-              contaNumeros++;
-              numeros += Dicionario.Count + " ";
+              numeros += " " + Dicionario.Count;
               Dicionario.Add(palav);
             }
             else
@@ -176,53 +169,36 @@ namespace Aeds3TP1
 
         }
       }
-      var economia = 1.00 - ((contaNumeros * 4) / (args.Length * 2));
-      Console.WriteLine("conta numeros:" + (contaNumeros));
-      Console.WriteLine("Economia de espaço/perda: " + Math.Round(economia, 4) * 100 + "%");
 
-      // WriteDicionario(UpdateCabeca(), Dicionario);
       return numeros;
     }
-    public string DesCompactarVersao(uint versao, List<int> numeros)
-    {
-      if (UpdateVersao(versao) != false)
-      {
-        return DesCompactarLZW(numeros);
-      }
 
-      return "Versao Invalida";
-    }
-    // string DesCompactarLZW(List<int> numeros)
-    // {
-    //   String palavra = "";
-    //   for (int i = 0; i < numeros.Count; i++)
-    //   {
-    //     palavra += Dicionario[numeros[i]];
-    //   }
-    //   return palavra;
-    // }
+    //Descompactação utilizando LZW
     public string DesCompactarLZW(List<int> numeros)
     {
-      String palavra = "";
+      String palavra = "";//retorna a string descompactada
       String add = "";
       for (int i = 0; i < numeros.Count; i++)
       {
         add = Dicionario[numeros[i]];
         palavra += add;
 
-        if (i != numeros.Count - 1)
+        if (i != numeros.Count - 1)//so adiciona ao dicionario se não for o ultimo numero
         {
-          add += Dicionario[numeros[i + 1]][0];
           Dicionario.Add(add);
+          Dicionario[Dicionario.Count - 1] += Dicionario[numeros[i + 1]][0];
         }
       }
       return palavra;
     }
 
+    //Escreve um novo dicionario atualizado
     public void WriteDicionarioAtual()
     {
       WriteDicionario(UpdateCabeca(), Dicionario);
     }
+
+    //escreve um novo dicionario na proxima linha do arquivo
     static void WriteDicionario(uint versao, List<string> dicionario)
     {
       FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate);
@@ -233,43 +209,14 @@ namespace Aeds3TP1
 
       for (int i = 0; i < dicionario.Count; i++)
       {
-        sw.Write("*" + dicionario[i]);
+        sw.Write("*" + dicionario[i]);// o * divide cada palavra do dicionario  
       }
       sw.Write("\n");
       sw.Close();
       sb.Close();
     }
-    // static long WriteDicionario(Compactar comp)
-    // {
-    //   var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-    //   stream.Seek(0, SeekOrigin.End);
-
-    //   var pular = Encoding.Unicode.GetBytes("\n");
-    //   stream.Write(pular);
-
-    //   var pos = stream.Position;
-    //   // pegar cada conjunto de bytes de acordo com seu tipo e tamanho
-    //   var totalbytes = comp.GetSomaBytes();
-
-    //   var versaoBytes = Utils.ReverseBytes(BitConverter.GetBytes(comp.Versao));
-    //   var totalBytesBytes = Utils.ReverseBytes(BitConverter.GetBytes(totalbytes));
-
-    //   stream.Write(versaoBytes);
-    //   stream.Write(totalBytesBytes);
-
-    //   for (int i = 0; i < comp.Dicionario.Count; i++)
-    //   {
-    //     var letras = Encoding.Unicode.GetBytes(comp.Dicionario[i]);
-    //     var letrasLength = (byte)letras.Length;
-
-    //     stream.WriteByte(letrasLength); // escreve o próximo byte do arquivo, correspondentes à quantidade de bytes da string
-    //     stream.Write(letras); // escreve os próximos 2x bytes do arquivo correspondentes ao nome da conta, onde x é a quantidade de caracteres da string
-
-    //   }
-    //   stream.Close();
-    //   return pos;
-    // }
+    // Incrementa o último id no início do arquivo e retorna o novo id
     static uint UpdateCabeca()
     {
       var ultimoId = ReadCabeca();
@@ -280,6 +227,8 @@ namespace Aeds3TP1
 
       return newId;
     }
+
+    //Leitura do uint cabeça, de um arquivo passado como parametro
     static uint ReadCabeca()
     {
       StreamReader sr = new StreamReader(Program.fileCompactar);
@@ -296,6 +245,7 @@ namespace Aeds3TP1
       return Convert.ToUInt32(cabeca);
     }
 
+    //Escreve na posicao inicial do arquivo um uint passado como parametro
     static void WriteCabeca(uint cabeca)
     {
       FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate);
@@ -308,6 +258,7 @@ namespace Aeds3TP1
       sb.Close();
     }
 
+    //Pega todoas as palavras de uma mesma string, e retorna uma lista com todas as palavras separadas
     public static List<string> ExtrairPalavra(string palavras)
     {
       var palavra = String.Empty;
@@ -332,6 +283,8 @@ namespace Aeds3TP1
 
       return listapalavras;
     }
+
+    //faz a leitura de uma linha onde esta todo o dicionario de uma versao especifica
     public static Tuple<uint, List<string>>? ReadDicionario(uint versaoPesquisa)
     {
       // ler cara conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe  
@@ -355,68 +308,5 @@ namespace Aeds3TP1
       }
       return null;
     }
-    // public static Compactar PesquisaDicionario(uint versaoPesquisa)
-    // {
-    //   StreamReader sr = new StreamReader(Program.fileCompactar);
-    //   for (int i = 1; i <= versaoPesquisa; i++)
-    //   {
-    //     sr.ReadLine();
-    //   }
-    // }
-    // public static Compactar ReadDicionario(uint offset)
-    // {
-    //   // ler cara conjunto de bytes de acordo com seu respectivo tipo e tamanho, para cada atributo da classe
-    //   var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
-    //   stream.Seek(offset, SeekOrigin.Begin);
-
-    //   #region Versao
-
-    //   var versaoBytes = new byte[4];
-
-    //   stream.Read(versaoBytes, 0, versaoBytes.Length);
-
-    //   versaoBytes = Utils.ReverseBytes(versaoBytes);
-
-    //   var versao = BitConverter.ToUInt32(versaoBytes);
-
-    //   #endregion
-
-    //   #region TotalBytes
-
-    //   var totalBytesBytes = new byte[4];
-
-    //   stream.Read(totalBytesBytes, 0, totalBytesBytes.Length);
-
-    //   totalBytesBytes = Utils.ReverseBytes(totalBytesBytes);
-
-    //   var totalBytes = BitConverter.ToUInt32(totalBytesBytes);
-
-    //   #endregion
-
-
-    //   var dicionarioTemp = new List<string>() { };
-
-    //   for (int i = 0; i < totalBytes; i++)
-    //   {
-    //     byte letrasTamanho = (byte)stream.ReadByte();
-
-    //     var letrasBytes = new byte[letrasTamanho];
-
-    //     stream.Read(letrasBytes, 0, letrasBytes.Length);
-
-    //     var letras = Encoding.Unicode.GetString(letrasBytes);
-
-    //     dicionarioTemp.Add(letras);
-    //   }
-
-    //   sr.Close();
-
-    //   return new Compactar
-    //   {
-    //     Versao = versao,
-    //     Dicionario = dicionarioTemp
-    //   };
-    // }
   }
 }

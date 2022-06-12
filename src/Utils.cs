@@ -3,6 +3,7 @@ namespace Aeds3TP1
   // classe de utilidades
   static class Utils
   {
+    static string palavraCifra = "ioae";
     // método para inverter a ordem de um array de bytes
     public static byte[] ReverseBytes(byte[] bytes)
     {
@@ -37,6 +38,7 @@ namespace Aeds3TP1
       ids.Sort();
       return ids;
     }
+
     //Retorna umas lista com todos os ids da string
     public static List<uint> Extrair(string palavras)
     {
@@ -65,12 +67,13 @@ namespace Aeds3TP1
             num = String.Empty;
           }
         }
-
         listaid.Add(UInt32.Parse(num));
       }
 
       return listaid;
     }
+
+    //transforma uma string com numeros em uma List<int> com numeros
     public static List<int> ExtrairNumeros(string palavras)
     {
       var ouint = Extrair(palavras);
@@ -131,6 +134,127 @@ namespace Aeds3TP1
       listapalavras.Add(palavra);
 
       return listapalavras;
+    }
+    static List<Cifra> MontaArrayCifra()
+    {
+      var array = new List<Cifra>() { };
+      for (int i = 0; i < palavraCifra.Length; i++)
+      {
+        array.Add(new Cifra(Letra: (byte)palavraCifra[i], Letras: "", Quant: 0));
+      }
+
+      return array;
+    }
+    // static List<Tuple<byte, T>> MontaArrayCifra<T>(T val)
+    // {
+    //   var array = new List<Tuple<byte, T>>() { };
+    //   for (int i = 0; i < palavraCifra.Length; i++)
+    //   {
+    //     var a = val is String;
+    //     var b = a? "":0;
+    //     array.Add(new Tuple<byte, T>((byte)palavraCifra[i],  ));
+    //   }
+
+    //   return array;
+    // }
+    // static List<Tuple<byte, int>> MontaArrayCifraQuantidade()
+    // {
+    //   var array = new List<Tuple<byte, int>>() { };
+    //   for (int i = 0; i < palavraCifra.Length; i++)
+    //   {
+    //     array.Add(new Tuple<byte, int>((byte)palavraCifra[i], 0));
+    //   }
+
+    //   return array;
+    // }
+    public static string CrifraColunas(string palavra)
+    {
+      var arrayCifra = MontaArrayCifra();
+
+      var j = 0;
+      for (int i = 0; i < palavra.Length; i++)
+      {
+        arrayCifra[j] = new Cifra(arrayCifra[j].Letra, arrayCifra[j].Letras + palavra[i], 0);
+        if (j == arrayCifra.Count - 1)
+        {
+          j = -1;
+        }
+        j++;
+      }
+
+      arrayCifra.Sort((a, b) => a.Letra - b.Letra);
+
+      var palavraCifrada = "";
+      for (int i = 0; i < arrayCifra.Count; i++)
+      {
+        palavraCifrada += arrayCifra[i].Letras;
+      }
+
+      return palavraCifrada;
+    }
+    static List<Cifra> OrganizaArrayCifra(List<Cifra> cifras)
+    {
+      var arrayCifra = MontaArrayCifra();
+
+      for (int i = 0; i < arrayCifra.Count; i++)
+      {
+        for (int j = 0; j < cifras.Count; j++)
+        {
+          if (arrayCifra[i].Letra == cifras[j].Letra)
+          {
+            arrayCifra[i] = cifras[j];
+          }
+        }
+      }
+
+      return arrayCifra;
+    }
+    public static string DesCrifraColunas(string palavra)
+    {
+      var arrayCifra = MontaArrayCifra();
+      var modulo = (palavra.Length * 1.0) % palavraCifra.Length;
+      var divisao = palavra.Length / palavraCifra.Length;
+      for (int i = 0; i < arrayCifra.Count; i++)
+      {
+        if (i < modulo)
+        {
+          arrayCifra[i] = new Cifra(arrayCifra[i].Letra, arrayCifra[i].Letras, divisao + 1);
+        }
+        else
+        {
+          arrayCifra[i] = new Cifra(arrayCifra[i].Letra, arrayCifra[i].Letras, divisao);
+        }
+      }
+
+      arrayCifra.Sort((a, b) => a.Letra - b.Letra);
+      var j = 0;
+
+      for (int i = 0; i < arrayCifra.Count; i++)
+      {
+        var temp = "";
+        var rodar = arrayCifra[i].Quant + j;
+        for (; j < rodar; j++)
+        {
+          temp += palavra[j];
+        }
+        arrayCifra[i] = new Cifra(arrayCifra[i].Letra, arrayCifra[i].Letras + temp, arrayCifra[i].Quant);
+      }
+
+      arrayCifra = OrganizaArrayCifra(arrayCifra);
+      var frase = "";
+
+      for (int i = 0; i < divisao + 1; i++)
+      {
+        for (j = 0; j < arrayCifra.Count; j++)
+        {
+          if (i < arrayCifra[j].Quant)
+          {
+            frase += arrayCifra[j].Letras[i];
+          }
+        }
+      }
+      return frase;
+
     }
   }
 }

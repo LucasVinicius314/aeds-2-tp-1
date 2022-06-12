@@ -117,11 +117,11 @@ namespace Aeds3TP1
 
     static void Test()
     {
-      // InsertTest();
-      LimpaArquivo(filePath);
-      LimpaArquivo(indexPath);
-      LimpaArquivo(fileCidade);
-      LimpaArquivo(filePessoa);
+      InsertTest();
+      // LimpaArquivo(filePath);
+      // LimpaArquivo(indexPath);
+      // LimpaArquivo(fileCidade);
+      // LimpaArquivo(filePessoa);
       Console.WriteLine("=== Conta");
 
       var conta = new Conta
@@ -197,8 +197,24 @@ namespace Aeds3TP1
       // var lista = new List<int> { 77, 74, 72 };
       // compactar.DesCompactarVersao(4, lista);
       // DescompactarContas();
-      CompactarContas();
-      DescompactarContas("res/dataCompressao1.dat");
+
+      var resposta2 = CompactarContas();
+      Console.WriteLine(resposta2);
+
+      resposta2 = DescompactarContas("dataCompressao5.dat");
+      Console.WriteLine(resposta2);
+
+      resposta2 = Utils.CrifraColunas("joao pedro");
+      resposta2 = Utils.DesCrifraColunas(resposta2);
+      Console.WriteLine(resposta2);
+
+      resposta2 = Utils.CrifraColunas("joao quarto o destruidor");
+      resposta2 = Utils.DesCrifraColunas(resposta2);
+      Console.WriteLine(resposta2);
+
+      resposta2 = Utils.CrifraColunas("kik");
+      resposta2 = Utils.DesCrifraColunas(resposta2);
+      Console.WriteLine(resposta2);
     }
 
     // método de teste para testar o funcionamento das operações de forma mais isolada
@@ -269,7 +285,7 @@ namespace Aeds3TP1
 
       var idConta = Utils.ReverseBytes(BitConverter.GetBytes(conta.IdConta));
 
-      var nomePessoa = Encoding.Unicode.GetBytes(conta.NomePessoa);
+      var nomePessoa = Encoding.Unicode.GetBytes(Utils.CrifraColunas(conta.NomePessoa));
       var nomePessoaLength = (byte)nomePessoa.Length;
 
       var cpf = Encoding.Unicode.GetBytes(conta.Cpf);
@@ -361,10 +377,10 @@ namespace Aeds3TP1
     //Cria um arquivo novo, por cima do arquivo passado como parametro, limpado o arquivo
     static void LimpaArquivo(string file)
     {
-      var stream = new FileStream(file, FileMode.Create, FileAccess.ReadWrite);
-
-      stream.Close();
+      File.Delete(file);
     }
+
+    //Limapa todos os aquivos utilizados pela conta
     static void LimpaTudo()
     {
       LimpaArquivo(filePath);
@@ -396,6 +412,7 @@ namespace Aeds3TP1
       return BitConverter.ToUInt32(Utils.ReverseBytes(cabeca));
     }
 
+    // le todas as contar de um aquivos
     static List<Conta> ReadTodasContas(string file)
     {
       List<Conta> contas = new List<Conta>() { };
@@ -622,52 +639,78 @@ namespace Aeds3TP1
 
       return null;
     }
-    public static void CompactarContas()
+
+    //faz a compactação de todas as contas do arquivo data.dat
+    public static string CompactarContas()
     {
-      CompactarContas(ReadTodasContas(filePath), "data", ReadCabeca(filePath), filePath);
+      return CompactarContas(ReadTodasContas(filePath), principalArquivo, ReadCabeca(filePath), filePath);
     }
-    static void CompactarContas(List<Conta> contas, string purefile, uint cabeca, string file)
+
+    static string CompactarContas(List<Conta> contas, string purefile, uint cabeca, string file)
     {
       Compactar compactar = new Compactar();
       var aquivo = caminhoAquivo + purefile + "Compressao" + compactar.Versao + tipoArquivo;
       LimpaArquivo(aquivo);
       WriteCabeca(cabeca, aquivo);
+
       for (int i = 0; i < contas.Count; i++)
       {
         contas[i].Cidade = compactar.CompactarLZW(contas[i].Cidade);
         contas[i].NomePessoa = compactar.CompactarLZW(contas[i].NomePessoa);
         contas[i].Cpf = compactar.CompactarLZW(contas[i].Cpf);
         contas[i].TotalBytes = contas[i].GetSomaBytes();
+
         Program.Write(0, contas[i], SeekOrigin.End, aquivo);
       }
+
       compactar.WriteDicionarioAtual();
+      var fi1 = new FileInfo(file).Length;
+      var fi2 = new FileInfo(aquivo).Length;
+
+      var ganho = "Ganho/perda: " + Math.Round((1.00 - ((fi2 * 1.0) / (fi1 * 1.0))) * 100, 4) + "%";
+
+      return ganho;//retorna uma string com a porcentagem de ganho com a compactação
     }
+
+    //Deixa uma string somente com o numero
     static uint ExtrairNum(string nome)
     {
       var num = new string(nome.Where(char.IsDigit).ToArray());
       return Convert.ToUInt32(num);
     }
-    static void DescompactarContas(string file)
+
+    //Faz a descompactação de de um arquivo onde estão armazenados as contas
+    public static string DescompactarContas(string file)
     {
-      var versao = ExtrairNum(file);
-      var contas = ReadTodasContas(file);
-      Compactar compactar = new Compactar();
-      compactar.UpdateVersao(versao);
-      // var lista = new List<int> { 0, 1, 17, 0, 26, 2, 0, 3, 63, 65 }; versao 1
-      // var lista = new List<int> { 71, 66, 68, 70, 64, 0 }; versao 2
-      // var a = compactar.DesCompactarLZW(lista);
-      for (int i = 0; i < contas.Count; i++)
+      var aquivoLer = caminhoAquivo + file; // adiciona a pasta res/ no nome do arquivo
+      if (File.Exists(aquivoLer) == true)
       {
-        contas[i].Cidade = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].Cidade));
-        contas[i].NomePessoa = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].NomePessoa));
-        contas[i].Cpf = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].Cpf));
-        contas[i].TotalBytes = contas[i].GetSomaBytes();
+        var versao = ExtrairNum(aquivoLer);
+
+        Compactar compactar = new Compactar();
+
+        var contas = ReadTodasContas(aquivoLer);
+        compactar.UpdateVersao(versao);
+        // var lista = new List<int> { 0, 1, 17, 0, 26, 2, 0, 3, 63, 65 }; versao 1
+        // var lista = new List<int> { 71, 66, 68, 70, 64, 0 }; versao 2
+        // var a = compactar.DesCompactarLZW(lista);
+        for (int i = 0; i < contas.Count; i++)
+        {
+          contas[i].Cidade = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].Cidade));
+          contas[i].NomePessoa = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].NomePessoa));
+          contas[i].Cpf = compactar.DesCompactarLZW(Utils.ExtrairNumeros(contas[i].Cpf));
+          contas[i].TotalBytes = contas[i].GetSomaBytes();
+        }
+        LimpaTudo();
+        for (int i = 0; i < contas.Count; i++)
+        {
+          Write(contas[i]);
+        }
+
+        return "Arquivos descompactados com sucesso";
       }
-      LimpaTudo();
-      for (int i = 0; i < contas.Count; i++)
-      {
-        Write(contas[i]);
-      }
+
+      return "O arquivo não exite";
     }
   }
 }

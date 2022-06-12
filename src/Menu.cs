@@ -17,7 +17,9 @@ namespace Aeds3TP1
   3 - Ler registro por cidade ou por nome
   4 - Atualizar registro
   5 - Deletar registro
-  6 - Sair");
+  6 - Compactar arquivo principal
+  7 - Descompactar aquivo principal
+  8 - Sair");
 
           var input = Console.ReadLine(); // input do usuário
 
@@ -59,6 +61,16 @@ namespace Aeds3TP1
               break;
 
             case "6":
+              // Deletar registro
+              CompactarArquivo();
+              break;
+
+            case "7":
+              // Deletar registro
+              DesCompactarArquivo();
+              break;
+
+            case "8":
               // Sair
               return;
 
@@ -479,6 +491,59 @@ namespace Aeds3TP1
             break;
         }
       }
+    }
+
+    static void CompactarArquivo()
+    {
+      Console.WriteLine("=== Compactar Arquivo");
+
+      Console.WriteLine("Deseja realmente compactar o aquivo principal? (1 - para sim, 2 - para não)");
+
+      var numInput = Console.ReadLine(); // input do usuário
+
+      if (numInput == null)
+      {
+        Console.WriteLine("Numero inválido.");
+
+        return;
+      }
+
+      var num = uint.Parse(numInput);
+
+      if (num == 1)
+      {
+        var resposta = Program.CompactarContas();
+        Console.WriteLine(resposta);
+      }
+      else if (num == 2)
+      {
+        return;
+      }
+      else
+      {
+        Console.WriteLine("Numero inválido.");
+
+        return;
+      }
+    }
+
+    static void DesCompactarArquivo()
+    {
+      Console.WriteLine("=== Descompactar Arquivo");
+
+      Console.WriteLine("Digite o nome do arquivo que deseja descompactar: ");
+
+      var nomeInput = Console.ReadLine(); // input do usuário
+
+      if (nomeInput == null)
+      {
+        Console.WriteLine("Nome inválido.");
+
+        return;
+      }
+      //digitar somente dataCompressaoX.dat
+      var resposta = Program.DescompactarContas(nomeInput);
+      Console.WriteLine(resposta);
     }
   }
 }
