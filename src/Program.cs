@@ -202,6 +202,13 @@ namespace Aeds3TP1
 
       var resposta2 = CompactarContas();
       Console.WriteLine(resposta2);
+      resposta2 = CompactarContas();
+      resposta2 = CompactarContas();
+      resposta2 = CompactarContas();
+      resposta2 = CompactarContas();
+      resposta2 = CompactarContas();
+      resposta2 = CompactarContas();
+      resposta2 = CompactarContas();
 
       resposta2 = DescompactarContas("dataCompressao5.dat");
       Console.WriteLine(resposta2);

@@ -195,7 +195,11 @@ namespace Aeds3TP1
     //Escreve um novo dicionario atualizado
     public void WriteDicionarioAtual()
     {
-      WriteDicionario(UpdateCabeca(), Dicionario);
+      Compactar dicionarioAtual = new Compactar();
+      if (dicionarioAtual.Dicionario.Count != this.Dicionario.Count)
+      {
+        WriteDicionario(UpdateCabeca(), Dicionario);
+      }
     }
 
     //escreve um novo dicionario na proxima linha do arquivo
@@ -229,48 +233,53 @@ namespace Aeds3TP1
     }
 
     //Leitura do uint cabeça, de um arquivo passado como parametro
-    static uint ReadCabeca()
-    {
-      FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate);
-
-      StreamReader sr = new StreamReader(sb);
-
-      var cabeca = sr.ReadLine();
-
-      sr.Close();
-      sb.Close();
-      if (cabeca == null)
-      {
-        WriteCabeca(0);
-        return 0;
-      }
-
-      return Convert.ToUInt32(cabeca);
-    }
-    // public static uint ReadCabeca()
+    // static uint ReadCabeca()
     // {
-    //   var cabeca = new byte[4];
+    //   FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate);
 
-    //   var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+    //   StreamReader sr = new StreamReader(sb);
 
-    //   stream.Read(cabeca, 0, cabeca.Length);
+    //   var cabeca = sr.ReadLine();
 
-    //   stream.Close();
+    //   sr.Close();
+    //   sb.Close();
+    //   if (cabeca == null)
+    //   {
+    //     WriteCabeca(0);
+    //     return 0;
+    //   }
 
-    //   return BitConverter.ToUInt32(Utils.ReverseBytes(cabeca));
-    // }r
+    //   return Convert.ToUInt32(cabeca);
+    // }
+    public static uint ReadCabeca()
+    {
+      var cabeca = new byte[4];
+
+      var stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+      // StreamWriter sr = new StreamWriter(stream);
+
+      stream.Read(cabeca, 0, cabeca.Length);
+      // sr.Write("\n");
+
+      // sr.Close();
+      stream.Close();
+
+      return BitConverter.ToUInt32(Utils.ReverseBytes(cabeca));
+    }
 
     //Escreve na posicao inicial do arquivo um uint passado como parametro
     static void WriteCabeca(uint cabeca)
     {
-      FileStream sb = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+      FileStream stream = new FileStream(Program.fileCompactar, FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-      StreamWriter sr = new StreamWriter(sb);
+      StreamWriter sr = new StreamWriter(stream);
 
-      sr.WriteLine(cabeca); // escreve o id incrementado
+      var newBytes = Utils.ReverseBytes(BitConverter.GetBytes(cabeca)); // escreve o id incrementado
+      stream.Write(newBytes);
+      sr.Write("\n");
 
       sr.Close();
-      sb.Close();
+      stream.Close();
     }
     // static void WriteCabeca(uint cabeca)
     // {
