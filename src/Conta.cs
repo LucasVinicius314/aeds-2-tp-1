@@ -131,6 +131,7 @@ namespace Aeds3TP1
       var nomePessoa = Encoding.Unicode.GetString(nomePessoaBytes);
 
       nomePessoa = Utils.DesCrifraColunas(nomePessoa);
+
       #endregion
 
       #region Cpf

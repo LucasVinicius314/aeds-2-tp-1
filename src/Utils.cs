@@ -135,6 +135,7 @@ namespace Aeds3TP1
 
       return listapalavras;
     }
+    //Monta uma lista com a Cifra, baseado na palavra que utilizamos como cifra
     static List<Cifra> MontaArrayCifra()
     {
       var array = new List<Cifra>() { };
@@ -145,28 +146,8 @@ namespace Aeds3TP1
 
       return array;
     }
-    // static List<Tuple<byte, T>> MontaArrayCifra<T>(T val)
-    // {
-    //   var array = new List<Tuple<byte, T>>() { };
-    //   for (int i = 0; i < palavraCifra.Length; i++)
-    //   {
-    //     var a = val is String;
-    //     var b = a? "":0;
-    //     array.Add(new Tuple<byte, T>((byte)palavraCifra[i],  ));
-    //   }
 
-    //   return array;
-    // }
-    // static List<Tuple<byte, int>> MontaArrayCifraQuantidade()
-    // {
-    //   var array = new List<Tuple<byte, int>>() { };
-    //   for (int i = 0; i < palavraCifra.Length; i++)
-    //   {
-    //     array.Add(new Tuple<byte, int>((byte)palavraCifra[i], 0));
-    //   }
-
-    //   return array;
-    // }
+    //constroi uma string cifrada, baseada na palavraCifra
     public static string CrifraColunas(string palavra)
     {
       var arrayCifra = MontaArrayCifra();
@@ -192,6 +173,8 @@ namespace Aeds3TP1
 
       return palavraCifrada;
     }
+
+    //reorganiza uma lista de cifra ordenada, baseada na ordem correta da palavraCifra
     static List<Cifra> OrganizaArrayCifra(List<Cifra> cifras)
     {
       var arrayCifra = MontaArrayCifra();
@@ -209,11 +192,13 @@ namespace Aeds3TP1
 
       return arrayCifra;
     }
+
+    //faz a descrifra da palavra, baseada na palavraCifra
     public static string DesCrifraColunas(string palavra)
     {
       var arrayCifra = MontaArrayCifra();
-      var modulo = (palavra.Length * 1.0) % palavraCifra.Length;
-      var divisao = palavra.Length / palavraCifra.Length;
+      var modulo = (palavra.Length * 1.0) % palavraCifra.Length;//utilizado para saber quantas das letras possuem 1 caractere a mais de tamanho
+      var divisao = palavra.Length / palavraCifra.Length;//saber quantas letras são necessarias para leitura por vez
       for (int i = 0; i < arrayCifra.Count; i++)
       {
         if (i < modulo)
@@ -233,7 +218,7 @@ namespace Aeds3TP1
       {
         var temp = "";
         var rodar = arrayCifra[i].Quant + j;
-        for (; j < rodar; j++)
+        for (; j < rodar; j++)//pega somente a quantidade de letras da string necessarios
         {
           temp += palavra[j];
         }
@@ -241,6 +226,7 @@ namespace Aeds3TP1
       }
 
       arrayCifra = OrganizaArrayCifra(arrayCifra);
+
       var frase = "";
 
       for (int i = 0; i < divisao + 1; i++)
